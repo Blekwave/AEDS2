@@ -3,6 +3,10 @@
 #include "Usuarios.h"
 #include "Filme.h"
 
+//#define DEBUG_SOMA
+//#define DEBUG_SAIDA
+//#define DEBUG_ORDENACAO
+
 /*
  MOST POPULAR
  */
@@ -19,35 +23,41 @@ int *SugestaoPorPopularidade(Usuarios *usuarios, Filme *filmes, int numfilmes, i
         atual = ObterProx(*atual);
     } while (atual != NULL);
 
-    // Gera o vetor com os índices dos filmes mais populares
-    int *saida = (int *)malloc(numsugestoes*sizeof(int)), maior, j, k;
-    for (i = 0; i < numsugestoes; i++)
-        saida[i] = -1;
-    for(i = 0; i < numsugestoes; i++){
-        // Escolha do filme mais popular
-        maior = 0;
-        for (j = 1; j < numfilmes; j++)
-            if (soma[j] > soma[maior])
-                maior = j;
+    #ifdef DEBUG_SOMA
+    for(i = 0; i < numfilmes; i++)
+        printf("Filme de indice #%d: %d visualizacoes\n", i, soma[i]);
+    #endif
 
-        // Posicionamento do filme de acordo com a data de lançamento
-        for (j = 0; j < numsugestoes; j++)
-            if (saida[j] == -1){
-                saida[j] = maior;
-                j = numsugestoes; // Quebra o loop
+    // Gera o vetor com os índices dos filmes mais populares
+    int *saida = (int *)malloc(numsugestoes*sizeof(int)), maior, j, k, presente;
+
+    // Escolha do filme mais popular
+    for(i = 0; i < numsugestoes; i++){
+        maior = 0;
+        for (j = 1; j < numfilmes; j++){
+            if (soma[j] > soma[maior] || ((soma[j] == soma[maior]) && (ObterAno(filmes[j]) > ObterAno(filmes[maior])))){
+                presente = 0;
+                // Checa se o filme de índice j já está presente na lista de saída
+                for (k = 0; k < i; k++)
+                    if (saida[k] == j)
+                        presente = 1;
+                if (!presente)
+                    maior = j;
             }
-            else if (ObterAno(filmes[saida[j]]) < ObterAno(filmes[maior])){
-                for(k = numsugestoes - 1; k > j; k--)
-                    saida[k] = saida[k-1];
-                saida[j] = maior;
-                j = numsugestoes; // Quebra o loop
-            }
-        soma[maior] = -1;
+        }
+        saida[i] = maior;
+
+        #ifdef DEBUG_ORDENACAO
+        printf("Loop i = %d: [", i);
+        for (j = 0; j < i+1; j++)
+            printf("%d%s", saida[j], j == i ? "]\n" : ", ");
+        #endif
     }
 
-    //Debug
+    #ifdef DEBUG_SAIDA
     for (i = 0; i < numsugestoes; i++)
-        printf("%d: %s\n", saida[i], ObterTitulo(filmes[saida[i]]));
+        printf("Sugestao #%d: Filme de id %d\n", i, saida[i]);
+    #endif
 
     free(soma);
     return saida;
@@ -74,32 +84,43 @@ Usuario *ObterUsuarioMaisSimilar(Usuarios *usuarios, int numfilmes, int user_id)
     return maior;
 }
 
+// void SelecionarFilmesMaisRecentes(Filme *filmes, int *saida, bool *assistidos, int numfilmes, int numsugestoes){
+//     int i, j, k;
+//     for (int i = 0; i < numsugestoes; i++)
+//         saida[i] = -1;
+//     for(i = 0; i < numfilmes; i++){
+//         if (assistidos[i])
+//             for(j = 0; j < numsugestoes; j++)
+//                 if (saida[j] == -1){
+//                     saida[j] = i;
+//                     j = numsugestoes; // Quebra o loop
+//                 }
+//                 else if (ObterAno(filmes[i]) > ObterAno(filmes[saida[j]])){
+//                     for(k = numsugestoes - 1; k > j; k--)
+//                         saida[k] = saida[k-1];
+//                     saida[j] = i;
+//                     j = numsugestoes;
+//                 }
+//     }
+// }
+
 void SelecionarFilmesMaisRecentes(Filme *filmes, int *saida, bool *assistidos, int numfilmes, int numsugestoes){
-    int i, j, k;
-    /*
-    O procedimento abaixo checa os filmes assistidos pelo usuário de maior 
-    similaridade. Se o filme foi assistido, ele, então, compara a data de 
-    lançamento até encontrar um filme lançado antes do filme atual. Caso 
-    todos os filmes presentes na saída sejam mais novos, nada acontece. Se é 
-    possível encaixar o filme escolhido, os filmes posteriores na lista de 
-    saída são deslocados um espaço para a frente e ele é, então adicionado, 
-    descartando o último da lista. 
-    */
-    for (int i = 0; i < numsugestoes; i++)
-        saida[i] = -1;
-    for(i = 0; i < numfilmes; i++){
-        if (assistidos[i])
-            for(j = 0; j < numsugestoes; j++)
-                if (saida[j] == -1){
-                    saida[j] = i;
-                    j = numsugestoes; // Quebra o loop
-                }
-                else if (ObterAno(filmes[i]) > ObterAno(filmes[saida[j]])){
-                    for(k = numsugestoes - 1; k > j; k--)
-                        saida[k] = saida[k-1];
-                    saida[j] = i;
-                    j = numsugestoes; // Quebra o loop
-                }
+    int i, j, k, maior, presente;
+    for(i = 0; i < numsugestoes; i++){
+        maior = -1;
+        // Seleciona maior filme
+        for (j = 0; j < numfilmes; j++){
+            if (assistidos[j] && (maior == -1 || ObterAno(filmes[j]) > ObterAno(filmes[maior]))){
+                presente = 0;
+                // Checa se o filme de índice j já está presente na lista de saída
+                for (k = 0; k < i; k++)
+                    if (saida[k] == j)
+                        presente = 1;
+                if (!presente)
+                    maior = j;
+            }
+        }
+        saida[i] = maior;
     }
 }
 

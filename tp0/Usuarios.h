@@ -52,7 +52,7 @@ Usuario *AdicionarUsuario(Usuarios *lista, int user_id, bool *assistidos);
 /*
  Libera a memória alocada para os usuários da lista.
  */
-void DestruirListaDeUsuarios(Usuarios *lista);
+void DestruirUsuarios(Usuarios *lista);
 
 /*
  Retorna o endereço do usuário de ID user_id, ou NULL, caso não haja tal

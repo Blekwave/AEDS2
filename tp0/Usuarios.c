@@ -56,7 +56,7 @@ Usuario *AdicionarUsuario(Usuarios *lista, int user_id, bool *assistidos){
     return novo;
 }
 
-void DestruirListaDeUsuarios(Usuarios *lista){
+void DestruirUsuarios(Usuarios *lista){
     Usuario *atual = lista->primeiro, *proximo;
     while (atual != NULL){
         free(atual->assistidos);
