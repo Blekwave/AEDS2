@@ -64,7 +64,7 @@ int main(int argc, char const *argv[])
             fprintf(stderr, "ERRO: Nao foi possivel encontrar um usuario similar a %d\n", user_id);
         else {
             for (int i = 0; i < NUM_SUGESTOES && similaridade[i] != -1; i++)
-                fprintf(output, "%s%c", ObterTitulo(filmes[similaridade[i]]), i == NUM_SUGESTOES - 1 ? '\n' : '\t' );
+                fprintf(output, "%s%c", ObterTitulo(filmes[similaridade[i]]), (i == NUM_SUGESTOES - 1) || (similaridade[i+1] == -1) ? '\n' : '\t' );
             free(similaridade);
         }
     } while (!feof(input));

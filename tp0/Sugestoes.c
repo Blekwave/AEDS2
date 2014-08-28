@@ -3,10 +3,6 @@
 #include "Usuarios.h"
 #include "Filme.h"
 
-//#define DEBUG_SOMA
-//#define DEBUG_SAIDA
-//#define DEBUG_ORDENACAO
-
 /*
  MOST POPULAR
  */
@@ -22,11 +18,6 @@ int *SugestaoPorPopularidade(Usuarios *usuarios, Filme *filmes, int numfilmes, i
             soma[i] += assistidos[i];
         atual = ObterProx(*atual);
     } while (atual != NULL);
-
-    #ifdef DEBUG_SOMA
-    for(i = 0; i < numfilmes; i++)
-        printf("Filme de indice #%d: %d visualizacoes\n", i, soma[i]);
-    #endif
 
     // Gera o vetor com os índices dos filmes mais populares
     int *saida = (int *)malloc(numsugestoes*sizeof(int)), maior, j, k, presente;
@@ -46,18 +37,7 @@ int *SugestaoPorPopularidade(Usuarios *usuarios, Filme *filmes, int numfilmes, i
             }
         }
         saida[i] = maior;
-
-        #ifdef DEBUG_ORDENACAO
-        printf("Loop i = %d: [", i);
-        for (j = 0; j < i+1; j++)
-            printf("%d%s", saida[j], j == i ? "]\n" : ", ");
-        #endif
     }
-
-    #ifdef DEBUG_SAIDA
-    for (i = 0; i < numsugestoes; i++)
-        printf("Sugestao #%d: Filme de id %d\n", i, saida[i]);
-    #endif
 
     free(soma);
     return saida;
@@ -83,26 +63,6 @@ Usuario *ObterUsuarioMaisSimilar(Usuarios *usuarios, int numfilmes, int user_id)
     } while ((atual = ObterProx(*atual)) != NULL);
     return maior;
 }
-
-// void SelecionarFilmesMaisRecentes(Filme *filmes, int *saida, bool *assistidos, int numfilmes, int numsugestoes){
-//     int i, j, k;
-//     for (int i = 0; i < numsugestoes; i++)
-//         saida[i] = -1;
-//     for(i = 0; i < numfilmes; i++){
-//         if (assistidos[i])
-//             for(j = 0; j < numsugestoes; j++)
-//                 if (saida[j] == -1){
-//                     saida[j] = i;
-//                     j = numsugestoes; // Quebra o loop
-//                 }
-//                 else if (ObterAno(filmes[i]) > ObterAno(filmes[saida[j]])){
-//                     for(k = numsugestoes - 1; k > j; k--)
-//                         saida[k] = saida[k-1];
-//                     saida[j] = i;
-//                     j = numsugestoes;
-//                 }
-//     }
-// }
 
 void SelecionarFilmesMaisRecentes(Filme *filmes, int *saida, bool *assistidos, int numfilmes, int numsugestoes){
     int i, j, k, maior, presente;
