@@ -58,11 +58,11 @@ int main(int argc, char const *argv[])
     do {
         fgets(buffer, BUFFER_TAMANHO, input);
         user_id = atoi(buffer);
-        fprintf(output, "%d: ", user_id);
         similaridade = SugestaoPorSimilaridade(usuarios, filmes, numfilmes, NUM_SUGESTOES, user_id);
         if (similaridade == NULL)
             fprintf(stderr, "ERRO: Nao foi possivel encontrar um usuario similar a %d\n", user_id);
         else {
+            fprintf(output, "%d: ", user_id);
             for (int i = 0; i < NUM_SUGESTOES && similaridade[i] != -1; i++)
                 fprintf(output, "%s%c", ObterTitulo(filmes[similaridade[i]]), (i == NUM_SUGESTOES - 1) || (similaridade[i+1] == -1) ? '\n' : '\t' );
             free(similaridade);
