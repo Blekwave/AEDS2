@@ -6,21 +6,21 @@
 /*
  MOST POPULAR
  */
-int *SugestaoPorPopularidade(Usuarios *usuarios, Filme *filmes, int numfilmes, int numsugestoes){
+int *SugestaoPorPopularidade(Lista *usuarios, Filme *filmes, int numfilmes, int numsugestoes){
     bool *assistidos;
-    Usuario *atual = usuarios->primeiro;
+    Nodo *atual = ObterPrimeiro(usuarios);
 
     // Cria matriz com o número de visualizações de cada filmes
-    int *soma = (int *)calloc(numfilmes, sizeof(int)), i;
+    int *soma = (int *) calloc(numfilmes, sizeof(int)), i;
     do {
-        assistidos = ObterAssistidos(*atual);
+        assistidos = ObterAssistidos((Usuario *) ObterDados(atual));
         for(i = 0; i < numfilmes; i++)
             soma[i] += assistidos[i];
-        atual = ObterProx(*atual);
+        atual = ObterProx(atual);
     } while (atual != NULL);
 
     // Gera o vetor com os índices dos filmes mais populares
-    int *saida = (int *)malloc(numsugestoes*sizeof(int)), maior, j, k, presente;
+    int *saida = (int *) malloc(numsugestoes*sizeof(int)), maior, j, k, presente;
 
     // Escolha do filme mais popular
     for(i = 0; i < numsugestoes; i++){
@@ -46,21 +46,22 @@ int *SugestaoPorPopularidade(Usuarios *usuarios, Filme *filmes, int numfilmes, i
 /*
  PERSONALIZADA
  */
-Usuario *ObterUsuarioMaisSimilar(Usuarios *usuarios, int numfilmes, int user_id){
-    Usuario *usuario = BuscarUsuarioPorID(*usuarios, user_id);
+Usuario *ObterUsuarioMaisSimilar(Lista *usuarios, int numfilmes, int user_id){
+    Usuario *usuario = BuscarUsuarioPorID(usuarios, user_id), *comparando, *maior = NULL;
     if (usuario == NULL)
         return NULL;
-    Usuario *atual = usuarios->primeiro, *maior = NULL;
+    Nodo *atual = ObterPrimeiro(usuarios);
     double maiorval = -1, temp;
     do {
-        if (atual != usuario){
-            temp = Jaccard(*usuario, *atual, numfilmes);
-            if (temp > maiorval || (temp == maiorval && ObterID(*atual) < ObterID(*maior))){
+        comparando = (Usuario *)ObterDados(atual);
+        if (comparando != usuario){
+            temp = Jaccard(usuario, comparando, numfilmes);
+            if (temp > maiorval || (temp == maiorval && ObterID(comparando) < ObterID(maior))){
                 maiorval = temp;
-                maior = atual;
+                maior = comparando;
             }
         }
-    } while ((atual = ObterProx(*atual)) != NULL);
+    } while ((atual = ObterProx(atual)) != NULL);
     return maior;
 }
 
@@ -84,11 +85,11 @@ void SelecionarFilmesMaisRecentes(Filme *filmes, int *saida, bool *assistidos, i
     }
 }
 
-int *SugestaoPorSimilaridade(Usuarios *usuarios, Filme *filmes, int numfilmes, int numsugestoes, int user_id){
+int *SugestaoPorSimilaridade(Lista *usuarios, Filme *filmes, int numfilmes, int numsugestoes, int user_id){
     Usuario *similar = ObterUsuarioMaisSimilar(usuarios, numfilmes, user_id);
     if (similar == NULL)
         return NULL;
     int *saida = (int *)malloc(numsugestoes*sizeof(int));
-    SelecionarFilmesMaisRecentes(filmes, saida, ObterAssistidos(*similar), numfilmes, numsugestoes);
+    SelecionarFilmesMaisRecentes(filmes, saida, ObterAssistidos(similar), numfilmes, numsugestoes);
     return saida;    
 }

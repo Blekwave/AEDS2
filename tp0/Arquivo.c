@@ -55,17 +55,17 @@ void DestruirListaDeFilmes(Filme *filmes, int numfilmes){
     free(filmes);
 }
 
-void DestruirListaDeUsuarios(Usuarios *lista){
-    DestruirUsuarios(lista);
-    free(lista);
+void DestruirListaDeUsuarios(Lista *lista){
+    // O comportamento do cast de ponteiro de função não é definido no caso abaixo, na teoria
+    // Na prática, não deve haver grandes problemas, suponho. Isso é complicado.
+    DestruirListaAlt(lista, (void(*)(void *))DestruirUsuario);
 }
 
-Usuarios *LerUsuarios(char *endereco, int numfilmes){
+Lista *LerUsuarios(char *endereco, int numfilmes){
     FILE *arquivo = fopen(endereco, "r");
     if (arquivo == NULL)
         return NULL;
-    Usuarios *lista = (Usuarios *)malloc(sizeof(Usuarios));
-    InicializarListaDeUsuarios(lista);
+    Lista *lista = InicializarLista();
     int buffer_tamanho = 1 + USER_ID_TAMANHO + numfilmes * 2; //\n + user_id + \t e bool para cada filme
     char *buffer = (char *)malloc(sizeof(char)*buffer_tamanho);
     char *pch;

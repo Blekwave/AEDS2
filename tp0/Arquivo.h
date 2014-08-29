@@ -4,7 +4,7 @@
 int ObterNumFilmes(char *endereco);
 Filme *LerFilmes(char *endereco, int numfilmes);
 void DestruirListaDeFilmes(Filme *filmes, int numfilmes);
-void DestruirListaDeUsuarios(Usuarios *lista);
-Usuarios *LerUsuarios(char *endereco, int numfilmes);
+void DestruirListaDeUsuarios(Lista *lista);
+Lista *LerUsuarios(char *endereco, int numfilmes);
 
 #endif

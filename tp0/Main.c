@@ -34,7 +34,7 @@ int main(int argc, char const *argv[])
     strcpy(usuarios_endereco, pch);
 
     int numfilmes = ObterNumFilmes(usuarios_endereco);
-    Usuarios *usuarios = LerUsuarios(usuarios_endereco, numfilmes);
+    Lista *usuarios = LerUsuarios(usuarios_endereco, numfilmes);
     Filme *filmes = LerFilmes(filmes_endereco, numfilmes);
 
     if (numfilmes == -1 || usuarios == NULL || filmes == NULL){
@@ -46,7 +46,8 @@ int main(int argc, char const *argv[])
     // Sugestões por popularidade
     int *populares = SugestaoPorPopularidade(usuarios, filmes, numfilmes, NUM_SUGESTOES);
     fprintf(output,"Most popular\n");
-    for (int i = 0; i < NUM_SUGESTOES; i++)
+    int i;
+    for (i = 0; i < NUM_SUGESTOES; i++)
         fprintf(output, "%s%c", ObterTitulo(filmes[populares[i]]), i == NUM_SUGESTOES - 1 ? '\n' : '\t' );
     free(populares);
 
@@ -63,7 +64,7 @@ int main(int argc, char const *argv[])
             fprintf(stderr, "ERRO: Nao foi possivel encontrar um usuario similar a %d\n", user_id);
         else {
             fprintf(output, "%d: ", user_id);
-            for (int i = 0; i < NUM_SUGESTOES && similaridade[i] != -1; i++)
+            for (i = 0; i < NUM_SUGESTOES && similaridade[i] != -1; i++)
                 fprintf(output, "%s%c", ObterTitulo(filmes[similaridade[i]]), (i == NUM_SUGESTOES - 1) || (similaridade[i+1] == -1) ? '\n' : '\t' );
             if (i == 0) // Nenhuma recomendação foi feita, portanto não houve quebra de linha
                 fprintf(output, "\n");
