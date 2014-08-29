@@ -65,6 +65,8 @@ int main(int argc, char const *argv[])
             fprintf(output, "%d: ", user_id);
             for (int i = 0; i < NUM_SUGESTOES && similaridade[i] != -1; i++)
                 fprintf(output, "%s%c", ObterTitulo(filmes[similaridade[i]]), (i == NUM_SUGESTOES - 1) || (similaridade[i+1] == -1) ? '\n' : '\t' );
+            if (i == 0) // Nenhuma recomendação foi feita, portanto não houve quebra de linha
+                fprintf(output, "\n");
             free(similaridade);
         }
     } while (!feof(input));
