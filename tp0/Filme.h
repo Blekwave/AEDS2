@@ -13,6 +13,7 @@ void DestruirFilme(Filme filme);
 int ObterAno(Filme filme);
 char *ObterTitulo(Filme filme);
 int ObterIMDBId(Filme filme);
+int ObterMovieID(Filme filme);
 
 
 #endif

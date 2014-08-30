@@ -24,9 +24,9 @@ int *SugestaoPorPopularidade(Lista *usuarios, Filme *filmes, int numfilmes, int 
 
     // Escolha do filme mais popular
     for(i = 0; i < numsugestoes; i++){
-        maior = 0;
-        for (j = 1; j < numfilmes; j++){
-            if (soma[j] > soma[maior] || ((soma[j] == soma[maior]) && (ObterAno(filmes[j]) > ObterAno(filmes[maior])))){
+        maior = -1;
+        for (j = 0; j < numfilmes; j++){
+            if (maior == -1 || soma[j] > soma[maior] || ((soma[j] == soma[maior]) && (ObterAno(filmes[j]) > ObterAno(filmes[maior])))){
                 presente = 0;
                 // Checa se o filme de índice j já está presente na lista de saída
                 for (k = 0; k < i; k++)
@@ -71,7 +71,7 @@ void SelecionarFilmesMaisRecentes(Filme *filmes, int *saida, bool *assistidos, i
         maior = -1;
         // Seleciona maior filme
         for (j = 0; j < numfilmes; j++){
-            if (assistidos[j] && (maior == -1 || ObterAno(filmes[j]) > ObterAno(filmes[maior]))){
+            if (assistidos[j] && (maior == -1 || ObterAno(filmes[j]) > ObterAno(filmes[maior]) || (ObterAno(filmes[j]) == ObterAno(filmes[maior]) && ObterMovieID(filmes[j]) > ObterMovieID(filmes[maior])))){
                 presente = 0;
                 // Checa se o filme de índice j já está presente na lista de saída
                 for (k = 0; k < i; k++)

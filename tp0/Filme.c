@@ -25,3 +25,7 @@ char *ObterTitulo(Filme filme){
 int ObterIMDBId(Filme filme){
     return filme.imdb_id;
 }
+
+int ObterMovieID(Filme filme){
+    return filme.movie_id;
+}

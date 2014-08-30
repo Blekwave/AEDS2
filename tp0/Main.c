@@ -20,7 +20,7 @@ int main(int argc, char const *argv[])
         exit(1);
     }
     FILE *output = fopen(OUTPUT_ENDERECO, "w");
-    if (input == NULL){
+    if (output == NULL){
         printf("Falha ao abrir arquivo de saida %s.\n", OUTPUT_ENDERECO);
         exit(1);
     }
@@ -48,7 +48,7 @@ int main(int argc, char const *argv[])
     fprintf(output,"Most popular\n");
     int i;
     for (i = 0; i < NUM_SUGESTOES; i++)
-        fprintf(output, "%s%c", ObterTitulo(filmes[populares[i]]), i == NUM_SUGESTOES - 1 ? '\n' : '\t' );
+        fprintf(output, "%s%s", i == 0 ? "" : "\t", ObterTitulo(filmes[populares[i]]));
     free(populares);
 
     // Sugestões personalizadas
@@ -63,11 +63,10 @@ int main(int argc, char const *argv[])
         if (similaridade == NULL)
             fprintf(stderr, "ERRO: Nao foi possivel encontrar um usuario similar a %d\n", user_id);
         else {
-            fprintf(output, "%d: ", user_id);
+            fprintf(output, "%d:", user_id);
             for (i = 0; i < NUM_SUGESTOES && similaridade[i] != -1; i++)
-                fprintf(output, "%s%c", ObterTitulo(filmes[similaridade[i]]), (i == NUM_SUGESTOES - 1) || (similaridade[i+1] == -1) ? '\n' : '\t' );
-            if (i == 0) // Nenhuma recomendação foi feita, portanto não houve quebra de linha
-                fprintf(output, "\n");
+                fprintf(output, "\t%s", ObterTitulo(filmes[similaridade[i]]));
+            fprintf(output, "\n");
             free(similaridade);
         }
     } while (!feof(input));
