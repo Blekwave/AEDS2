@@ -29,21 +29,11 @@ Nodo *ObterUltimo(Lista *lista){
     return lista->ultimo;
 }
 
-void DestruirLista(Lista *lista){
+void DestruirLista(Lista *lista, void(*DestruirDados)(void *)){
     Nodo *atual = lista->primeiro, *prox;
     while (atual != NULL){
         prox = ObterProx(atual);
-        DestruirNodo(atual);
-        atual = prox;
-    }
-    free(lista);
-}
-
-void DestruirListaAlt(Lista *lista, void(*DestruirDados)(void *)){
-    Nodo *atual = lista->primeiro, *prox;
-    while (atual != NULL){
-        prox = ObterProx(atual);
-        DestruirNodoAlt(atual, DestruirDados);
+        DestruirNodo(atual, DestruirDados);
         atual = prox;
     }
     free(lista);

@@ -26,11 +26,9 @@ void DefinirDados(Nodo *nodo, void *dados){
     nodo->dados = dados;
 }
 
-void DestruirNodo(Nodo *nodo){
+void DestruirNodo(Nodo *nodo, void (*DestruirDados)(void *)){
+    if (DestruirDados != NULL)
+        (*DestruirDados)(nodo->dados);
     free(nodo->dados);
     free(nodo);
-}
-void DestruirNodoAlt(Nodo *nodo, void (*DestruirDados)(void *)){
-    (*DestruirDados)(nodo->dados);
-    DestruirNodo(nodo);
 }

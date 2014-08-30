@@ -55,7 +55,7 @@ void DestruirListaDeFilmes(Filme *filmes, int numfilmes){
 void DestruirListaDeUsuarios(Lista *lista){
     // O comportamento do cast de ponteiro de função não é definido no caso abaixo, na teoria
     // Na prática, não deve haver grandes problemas, suponho. Isso é complicado.
-    DestruirListaAlt(lista, (void(*)(void *))DestruirUsuario);
+    DestruirLista(lista, (void(*)(void *))DestruirUsuario);
 }
 
 Lista *LerUsuarios(char *endereco, int numfilmes){

@@ -39,19 +39,13 @@ Nodo *ObterPrimeiro(Lista *lista);
 Nodo *ObterUltimo(Lista *lista);
 
 /**
- * Libera memória dos nodos da lista e da lista em si. Não realiza nenhum pro-
- * cedimento nos dados dos nodos.
- * @param lista Lista a ser liberada.
- */
-void DestruirLista(Lista *lista);
-
-/**
  * Libera memória dos nodos da lista e da lista em si. Realiza o procedimento
  * DestruirDados nos dados dos nodos da lista antes da liberação.
  * @param lista Lista a ser liberada.
  * @param DestruirDados ponteiro de função void cujo parâmetro é um ponteiro
- *                      void correspondente aos dados do nodo.
+ *                      void correspondente aos dados do nodo. Pode ser NULL,
+ *                      caso não haja necessidade de usar essa funcionalidade.
  */
-void DestruirListaAlt(Lista *lista, void(*DestruirDados)(void *));
+void DestruirLista(Lista *lista, void(*DestruirDados)(void *));
 
 #endif

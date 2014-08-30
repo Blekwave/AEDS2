@@ -43,19 +43,14 @@ void *ObterDados(Nodo *nodo);
 void DefinirDados(Nodo *nodo, void *dados);
 
 /**
- * Libera a memória do nodo a ser destruído e dos seus dados
- * @param nodo Nodo a ser destruído
- */
-void DestruirNodo(Nodo *nodo);
-
-/**
  * Executa uma função cujo parâmetro são os dados do nodo, caso seja preciso
  * realizar procedimentos especiais para destruir os dados do nodo. Após fazê-
  * -lo, destrói o nodo.
  * @param nodo Nodo a ser destruído
  * @param DestruirDados ponteiro de função void cujo parâmetro é um ponteiro
- *                      void correspondente aos dados do nodo.
+ *                      void correspondente aos dados do nodo. Pode ser NULL,
+ *                      caso não haja necessidade de usar essa funcionalidade.
  */
-void DestruirNodoAlt(Nodo *nodo, void (*DestruirDados)(void *));
+void DestruirNodo(Nodo *nodo, void (*DestruirDados)(void *));
 
 #endif
