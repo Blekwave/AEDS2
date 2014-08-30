@@ -46,4 +46,5 @@ void DestruirListaAlt(Lista *lista, void(*DestruirDados)(void *)){
         DestruirNodoAlt(atual, DestruirDados);
         atual = prox;
     }
+    free(lista);
 }

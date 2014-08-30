@@ -1,7 +1,7 @@
 #include "Usuarios.h"
 #include <stdlib.h>
 
-Usuario *InicializarUsuario(int user_id, bool *assistidos, Usuario *prox){
+Usuario *InicializarUsuario(int user_id, bool *assistidos){
     Usuario *novo = (Usuario *)malloc(sizeof(Usuario));
     novo->user_id = user_id;
     novo->assistidos = assistidos;
@@ -32,13 +32,14 @@ double Jaccard(Usuario *a, Usuario *b, int numfilmes){
 }
 
 Usuario *AdicionarUsuario(Lista *lista, int user_id, bool *assistidos){
-    Usuario *novo = InicializarUsuario(user_id, assistidos, NULL);
+    Usuario *novo = InicializarUsuario(user_id, assistidos);
     AdicionarElemento(lista, (void *)novo);
     return novo;
 }
 
 Usuario *BuscarUsuarioPorID(Lista *lista, int user_id){
     Nodo *atual = lista->primeiro;
+    // O cast para Usuario * é necessário, já que ObterDados retorna void *
     while (atual != NULL && ObterID((Usuario *)ObterDados(atual)) != user_id)
         atual = ObterProx(atual);
     return atual == NULL ? NULL : (Usuario *)ObterDados(atual);

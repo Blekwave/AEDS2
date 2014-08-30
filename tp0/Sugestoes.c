@@ -3,9 +3,9 @@
 #include "Usuarios.h"
 #include "Filme.h"
 
-/*
- MOST POPULAR
- */
+//////////////////
+// MOST POPULAR //
+//////////////////
 int *SugestaoPorPopularidade(Lista *usuarios, Filme *filmes, int numfilmes, int numsugestoes){
     bool *assistidos;
     Nodo *atual = ObterPrimeiro(usuarios);
@@ -43,15 +43,16 @@ int *SugestaoPorPopularidade(Lista *usuarios, Filme *filmes, int numfilmes, int 
     return saida;
 }
 
-/*
- PERSONALIZADA
- */
+///////////////////
+// PERSONALIZADA //
+///////////////////
 Usuario *ObterUsuarioMaisSimilar(Lista *usuarios, int numfilmes, int user_id){
     Usuario *usuario = BuscarUsuarioPorID(usuarios, user_id), *comparando, *maior = NULL;
     if (usuario == NULL)
         return NULL;
     Nodo *atual = ObterPrimeiro(usuarios);
     double maiorval = -1, temp;
+    // Checa todos os usuários e seleciona o de maior Jaccard
     do {
         comparando = (Usuario *)ObterDados(atual);
         if (comparando != usuario){
@@ -71,6 +72,11 @@ void SelecionarFilmesMaisRecentes(Filme *filmes, int *saida, bool *assistidos, i
         maior = -1;
         // Seleciona maior filme
         for (j = 0; j < numfilmes; j++){
+            ////////////////////////////////////////////////////////////////////////////////
+            // Critério de ordenação: para ser listado o filme deve ter sido assistido.   //
+            // A prioridade é para o filme mais recente, sendo que se o ano de lançamento //
+            // for igual, ganha o filme de maior movie_id.                                //
+            ////////////////////////////////////////////////////////////////////////////////
             if (assistidos[j] && (maior == -1 || ObterAno(filmes[j]) > ObterAno(filmes[maior]) || (ObterAno(filmes[j]) == ObterAno(filmes[maior]) && ObterMovieID(filmes[j]) > ObterMovieID(filmes[maior])))){
                 presente = 0;
                 // Checa se o filme de índice j já está presente na lista de saída

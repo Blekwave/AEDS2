@@ -7,10 +7,6 @@
 #define BUFFER_TAMANHO 256
 #define USER_ID_TAMANHO 11
 
-/*
- ARQUIVO E INICIALIZAÇÃO
- */
-
 // char *endereco: endereço da lista de USUÁRIOS
 int ObterNumFilmes(char *endereco){
     char ch;
@@ -18,6 +14,7 @@ int ObterNumFilmes(char *endereco){
     if (arquivo == NULL)
         return -1;
     int contagem = 0;
+    // Conta número de tabs em uma linha para descobrir o número de filmes listados
     while ((ch = fgetc(arquivo)) != '\n')
         if (ch == '\t')
             contagem++;
@@ -66,7 +63,7 @@ Lista *LerUsuarios(char *endereco, int numfilmes){
     if (arquivo == NULL)
         return NULL;
     Lista *lista = InicializarLista();
-    int buffer_tamanho = 1 + USER_ID_TAMANHO + numfilmes * 2; //\n + user_id + \t e bool para cada filme
+    int buffer_tamanho = 2 + USER_ID_TAMANHO + numfilmes * 2; //\n + \0 + user_id + \t e bool para cada filme
     char *buffer = (char *)malloc(sizeof(char)*buffer_tamanho);
     char *pch;
     int user_id, i;
@@ -76,7 +73,7 @@ Lista *LerUsuarios(char *endereco, int numfilmes){
         pch = strtok(buffer, "\t\n");
         user_id = atoi(pch);
         pch = strtok(NULL, "\t\n");
-        if (pch != NULL){
+        if (pch != NULL){ // Importante para evitar usuário extra pela leitura da linha em branco no final do arquivo
             assistidos = (bool *) malloc(sizeof(bool)*numfilmes);
             for (i = 0; pch != NULL; i++){
                 assistidos[i] = atoi(pch);
