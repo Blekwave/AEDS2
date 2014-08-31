@@ -1,6 +1,8 @@
-# Makefile de teste
+# TP0 - Sistema de recomendações
+# Victor Pires Diniz
+# victorpiresdiniz@dcc.ufmg.br
 
-TARGET = Programa.exe
+TARGET = TP0.exe
 
 CC = gcc
 CFLAGS = -g -pg -Wall -O2 -std=c99
@@ -21,3 +23,8 @@ $(BINDIR)/$(TARGET): $(OBJECTS)
 
 $(OBJECTS): $(OBJDIR)/%.o : $(SRCDIR)/%.c
 	$(CC) $(CFLAGS) -c $< -o $@
+
+.PHONY: clean
+
+clean:
+	rm -f $(OBJECTS)
