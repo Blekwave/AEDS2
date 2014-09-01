@@ -9,19 +9,23 @@
 #define BUFFER_TAMANHO 256
 #define USER_ID_TAMANHO 11
 #define NUM_SUGESTOES 3
-#define INPUT_ENDERECO "input.txt"
-#define OUTPUT_ENDERECO "output.txt"
+#define INPUT_ENDERECO_DEFAULT "input.txt"
+#define OUTPUT_ENDERECO_DEFAULT "output.txt"
 
 int main(int argc, char const *argv[])
 {
-    FILE *input = fopen(INPUT_ENDERECO, "r");
+    char input_endereco[BUFFER_TAMANHO], output_endereco[BUFFER_TAMANHO];
+    strcpy(input_endereco, argc >= 2 ? argv[1] : INPUT_ENDERECO_DEFAULT);
+    strcpy(output_endereco, argc >= 3 ? argv[2] : OUTPUT_ENDERECO_DEFAULT);
+
+    FILE *input = fopen(input_endereco, "r");
     if (input == NULL){
-        printf("Falha ao abrir arquivo de entrada %s.\n", INPUT_ENDERECO);
+        fprintf(stderr,"Falha ao abrir arquivo de entrada %s.\n", input_endereco);
         exit(1);
     }
-    FILE *output = fopen(OUTPUT_ENDERECO, "w");
+    FILE *output = fopen(output_endereco, "w");
     if (output == NULL){
-        printf("Falha ao abrir arquivo de saida %s.\n", OUTPUT_ENDERECO);
+        fprintf(stderr,"Falha ao abrir arquivo de saida %s.\n", output_endereco);
         exit(1);
     }
 
@@ -38,7 +42,8 @@ int main(int argc, char const *argv[])
     Filme *filmes = LerFilmes(filmes_endereco, numfilmes);
 
     if (numfilmes == -1 || usuarios == NULL || filmes == NULL){
-        printf("Falha na leitura das bases de dados indicadas.\n");
+        fprintf(stderr,"Falha na leitura das bases de dados indicadas.\n");
+        exit(1);
     } else {
         fprintf(output, "%s\t%s\n\n", filmes_endereco, usuarios_endereco);
     }
