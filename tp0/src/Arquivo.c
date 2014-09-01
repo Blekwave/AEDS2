@@ -29,8 +29,8 @@ Filme *LerFilmes(char *endereco, int numfilmes){
     Filme *filmes = (Filme *)malloc(sizeof(Filme)*numfilmes);
     char buffer[BUFFER_TAMANHO], titulo[BUFFER_TAMANHO];
     char *pch;
-    int movie_id, ano, imdb_id;
-    for (int i = 0; i < numfilmes; i++){
+    int movie_id, ano, imdb_id, i;
+    for (i = 0; i < numfilmes; i++){
         fgets(buffer, BUFFER_TAMANHO, arquivo);
         pch = strtok(buffer, "\t\n");
         movie_id = atoi(pch);
@@ -47,7 +47,8 @@ Filme *LerFilmes(char *endereco, int numfilmes){
 }
 
 void DestruirListaDeFilmes(Filme *filmes, int numfilmes){
-    for (int i = 0; i < numfilmes; i++)
+    int i;
+    for (i = 0; i < numfilmes; i++)
         DestruirFilme(filmes[i]);
     free(filmes);
 }

@@ -21,8 +21,8 @@ bool *ObterAssistidos(Usuario *usuario){
 }
 
 double Jaccard(Usuario *a, Usuario *b, int numfilmes){
-    int uniao = 0, intersecao = 0;
-    for (int i = 0; i < numfilmes; i++)
+    int uniao = 0, intersecao = 0, i;
+    for (i = 0; i < numfilmes; i++)
         if (a->assistidos[i] || b->assistidos[i]){
             uniao++;
             if (a->assistidos[i] && b->assistidos[i])
