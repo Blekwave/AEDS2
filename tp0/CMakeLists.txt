@@ -7,4 +7,8 @@ message("Source tree path: ${TP0_SOURCE_DIR}")
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99")
 
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${TP0_BINARY_DIR}/lib")
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${TP0_BINARY_DIR}/lib")
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${TP0_BINARY_DIR}/bin")
+
 add_subdirectory(${TP0_SOURCE_DIR}/src)

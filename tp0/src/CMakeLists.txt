@@ -1,5 +1,4 @@
 include_directories(${TP0_SOURCE_DIR}/src)
-link_directories(${TP0_BINARY_DIR}/src)
 
 add_library(usuario Usuario.c)
 add_library(filme Filme.c)
