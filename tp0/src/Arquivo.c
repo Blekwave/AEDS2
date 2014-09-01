@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "Filme.h"
-#include "Usuarios.h"
+#include "Usuario.h"
 
 #define BUFFER_TAMANHO 256
 #define USER_ID_TAMANHO 11
@@ -68,8 +68,7 @@ Lista *LerUsuarios(char *endereco, int numfilmes){
     char *pch;
     int user_id, i;
     bool *assistidos;
-    while (!feof(arquivo)){
-        fgets(buffer, buffer_tamanho, arquivo);
+    while (fgets(buffer, buffer_tamanho, arquivo) != NULL){
         pch = strtok(buffer, "\t\n");
         user_id = atoi(pch);
         pch = strtok(NULL, "\t\n");

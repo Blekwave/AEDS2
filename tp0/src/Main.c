@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "Filme.h"
-#include "Usuarios.h"
+#include "Usuario.h"
 #include "Sugestoes.h"
 #include "Arquivo.h"
 
@@ -49,6 +49,7 @@ int main(int argc, char const *argv[])
     int i;
     for (i = 0; i < NUM_SUGESTOES; i++)
         fprintf(output, "%s%s", i == 0 ? "" : "\t", ObterTitulo(filmes[populares[i]]));
+    fprintf(output, "\n");
     free(populares);
 
     // Sugestões personalizadas
@@ -56,8 +57,7 @@ int main(int argc, char const *argv[])
     fprintf(output, "\nPersonalizada\n");
 
     fgetc(input); // Descarta linha em branco (segunda linha do input.txt)
-    do {
-        fgets(buffer, BUFFER_TAMANHO, input);
+    while (fgets(buffer, BUFFER_TAMANHO, input) != NULL) {
         user_id = atoi(buffer);
         similaridade = SugestaoPorSimilaridade(usuarios, filmes, numfilmes, NUM_SUGESTOES, user_id);
         if (similaridade == NULL)
@@ -69,7 +69,7 @@ int main(int argc, char const *argv[])
             fprintf(output, "\n");
             free(similaridade);
         }
-    } while (!feof(input));
+    }
 
     DestruirListaDeFilmes(filmes, numfilmes);
     DestruirListaDeUsuarios(usuarios);

@@ -1,0 +1,10 @@
+# CMakeLists.txt
+cmake_minimum_required(VERSION 2.8.12 FATAL_ERROR)
+project(TP0 C)
+
+message("Binary tree path: ${TP0_BINARY_DIR}")
+message("Source tree path: ${TP0_SOURCE_DIR}")
+
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99")
+
+add_subdirectory(${TP0_SOURCE_DIR}/src)

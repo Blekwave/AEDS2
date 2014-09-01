@@ -1,4 +1,4 @@
-#include "Usuarios.h"
+#include "Usuario.h"
 #include <stdlib.h>
 
 Usuario *InicializarUsuario(int user_id, bool *assistidos){
