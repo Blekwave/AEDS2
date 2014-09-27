@@ -10,8 +10,8 @@ typedef struct {
 } Lista;
 
 /**
- * Aloca a memória da nova lista e inicializa primeiro e último elemento como
- * NULL.
+ * Aloca a memória da nova lista, adiciona o nodo cabeça e atribui seu endereço
+ * como primeira e última posições da lista.
  * @return endereço da nova lista.
  */
 Lista *InicializarLista();
