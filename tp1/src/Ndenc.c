@@ -1,8 +1,8 @@
 #include "Ndenc.h"
 #include <stdlib.h>
 
-Nodo *InicializarNodo(void *dados, void *prox, void *ant){
-    Nodo *novo = (Nodo *)malloc(sizeof(Nodo));
+Ndenc *InicializarNdenc(void *dados, void *prox, void *ant){
+    Ndenc *novo = (Ndenc *)malloc(sizeof(Ndenc));
     if (novo != NULL){
         novo->dados = dados;
         novo->prox = prox;
@@ -11,31 +11,31 @@ Nodo *InicializarNodo(void *dados, void *prox, void *ant){
     return novo;
 }
 
-Nodo *ObterProx(Nodo *nodo){
+Ndenc *ObterProx(Ndenc *nodo){
     return nodo->prox;
 }
 
-void DefinirProx(Nodo *nodo, void *prox){
+void DefinirProx(Ndenc *nodo, void *prox){
     nodo->prox = prox;
 }
 
-Nodo *ObterAnt(Nodo *nodo){
+Ndenc *ObterAnt(Ndenc *nodo){
     return nodo->ant;
 }
 
-void DefinirAnt(Nodo *nodo, void *ant){
+void DefinirAnt(Ndenc *nodo, void *ant){
     nodo->ant = ant;
 }
 
-void *ObterDados(Nodo *nodo){
+void *ObterDados(Ndenc *nodo){
     return nodo->dados;
 }
 
-void DefinirDados(Nodo *nodo, void *dados){
+void DefinirDados(Ndenc *nodo, void *dados){
     nodo->dados = dados;
 }
 
-void DestruirNodo(Nodo *nodo, void (*DestruirDados)(void *)){
+void DestruirNdenc(Ndenc *nodo, void (*DestruirDados)(void *)){
     if (DestruirDados != NULL)
         (*DestruirDados)(nodo->dados);
     if (nodo->dados != NULL)
