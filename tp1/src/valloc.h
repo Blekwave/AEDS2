@@ -1,6 +1,7 @@
 #ifndef _VALLOC_H_
 #define _VALLOC_H_
 
+#include <stdlib.h>
 #include <stdbool.h>
 #include "Ldenc.h"
 
@@ -10,11 +11,8 @@ typedef struct {
 } memchunk;
 
 #define MAX_MEM 1024576
-extern unsigned char MEM[MAX_MEM];
+extern unsigned char memoria[MAX_MEM];
 extern Ldenc *auxiliar;
-
-//valloc_initialize
-void valloc_initialize();
 
 //valloc
 void *valloc(size_t tam);
@@ -28,7 +26,9 @@ void *vrealloc(void *var, size_t tam);
 //vfree
 void vfree(void *mem);
 
-//print_valloc
-void print_valloc();
+
+void inicializa_gerencia();
+void imprime_status_memoria();
+void finaliza_gerencia();
 
 #endif

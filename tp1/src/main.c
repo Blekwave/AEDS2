@@ -36,7 +36,7 @@ int main(int argc, char * argv[])
     // Verifica o numero de argumentos
     if( argc < 2 )
     {
-        printf("Utilização: ./tp1 <entrada> <saida>");
+        printf("Utilização: ./tp1 <entrada>");
         exit(EXIT_FAILURE);
     }
 
@@ -77,6 +77,24 @@ int main(int argc, char * argv[])
 
         // VALLOC: Aloca espaco da memoria
         if (strcmp(VALLOC,token) == 0){
+            // tamanho do bloco
+            token = strtok(NULL, SEP);
+            tamBloco = atoi(token);
+
+            // id da variavel
+            token = strtok(NULL, SEP);  // V[id]
+            token = strtok(token, SEPVAR);  // id
+            id = atoi(token);
+            
+            // aloca espaco e armazena no vetor
+            Var[id] = (short int*)valloc(tamBloco);
+            printf("\n");
+            if(Var[id]!=NULL)printf("VALLOC %zu V%d\tADDR %p\n", tamBloco, id, Var[id]);
+            else printf("VALLOC %zu V%d\tADDR NULL\n",tamBloco, id);
+        }
+        
+        // VCALLOC: aloca espaco da memoria e preenche com zeros
+        if (strcmp(VCALLOC, token) == 0){
             // número de blocos
             token = strtok(NULL, SEP);
             numBlocos = atoi(token);
@@ -91,27 +109,9 @@ int main(int argc, char * argv[])
             id = atoi(token);
             
             // aloca espaco e armazena no vetor
-            Var[id] = (short int*)valloc(numBlocos, tamBloco);
+            Var[id] = (short int*)vcalloc(numBlocos, tamBloco);
             printf("\n");
-            if(Var[id]!=NULL)printf("VALLOC %zu %zu V%d\tADDR %p\n", numBlocos, tamBloco, id, Var[id]);
-            else printf("VALLOC %zu V%d\tADDR NULL\n",tamBloco, id);
-        }
-        
-        // VCALLOC: aloca espaco da memoria e preenche com zeros
-        if (strcmp(VCALLOC, token) == 0){
-            // tamanho do bloco
-            token = strtok(NULL, SEP);
-            tamBloco = atoi(token);
-
-            // id da variavel
-            token = strtok(NULL, SEP);  // V[id]
-            token = strtok(token, SEPVAR);  // id
-            id = atoi(token);
-            
-            // aloca espaco e armazena no vetor
-            Var[id] = (short int*)vcalloc(tamBloco);
-            printf("\n");
-            if(Var[id]!=NULL)printf("VCALLOC %zu V%d\tADDR %p\n",tamBloco, id, Var[id]);
+            if(Var[id]!=NULL)printf("VCALLOC %zu %zu V%d\tADDR %p\n",numBlocos, tamBloco, id, Var[id]);
             else printf("VCALLOC %zu V%d\tADDR NULL\n",tamBloco, id);
         }
 
