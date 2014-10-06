@@ -6,6 +6,10 @@
 unsigned char memoria[MAX_MEM];
 Ldenc *auxiliar;
 
+////////////////////////
+// Funções auxiliares //
+////////////////////////
+
 memchunk *InicializarMemchunk(bool used, size_t size){
     memchunk *temp = (memchunk *)malloc(sizeof(memchunk));
     temp->used = used;
@@ -46,7 +50,11 @@ unsigned char *EncontrarEndereco(Ndenc *nodo){
     return init;
 }
 
-//valloc
+
+////////////////////////
+// Funções principais //
+////////////////////////
+
 void *valloc(size_t tam){
     /**
      * Encontra lacuna da qual possa ser alocado um bloco de memória de tamanho
@@ -81,7 +89,45 @@ void *vcalloc(size_t num, size_t tam){
 
 //vrealloc
 void *vrealloc(void *var, size_t tam){
-    size_t tamanho_origem = ObterMemchunk(EncontrarNodo(var))->size;
+    Ndenc *nodo = EncontrarNodo(var);
+    if (nodo == NULL)
+        return valloc(tam);
+    Ndenc *prox = ObterProx(nodo);
+    size_t tamanho_origem = ObterMemchunk(nodo)->size;
+    int diferenca = tam - tamanho_origem;
+    if (diferenca == 0) // Não é necessário realizar nenhuma operação
+        return var;
+    if (diferenca < 0){
+        /////////////////////////////////////////////////////////////////////
+        // Diferença negativa: redução do espaço alocado.                  //
+        // Programa checa se o próximo nodo é espaço vazio.                //
+        // Em caso afirmativo, ele reduz o nodo atual e aumenta o próximo. //
+        // Caso contrário, é adicionado um novo nodo com o espaço liberado.//
+        /////////////////////////////////////////////////////////////////////
+        ObterMemchunk(nodo)->size = tam;
+        if (prox != NULL && ObterMemchunk(prox)->used == false){
+            ObterMemchunk(prox)->size -= diferenca;
+        } else {
+            memchunk *novo = InicializarMemchunk(false, (-1) * diferenca);
+            AdicionarElemento(auxiliar, nodo, novo);
+        }
+        return var;
+    }
+
+    /////////////////////////////////////////////////////////////////////////
+    // Diferença positiva: alocação de mais espaço.                        //
+    // É, primeiro, checado se é possível realocar com o espaço adjacente. //
+    // Em caso afirmativo, isso é feito. Caso contrário, a variável é      //
+    // realocada para outro ponto da memória e seu conteúdo é movido.      //
+    /////////////////////////////////////////////////////////////////////////
+    if (prox != NULL){
+        memchunk *prox_memchunk = ObterMemchunk(prox);
+        if (prox_memchunk->used == false && diferenca <= prox_memchunk->size){
+            ObterMemchunk(nodo)->size = tam;
+            prox_memchunk->size -= diferenca;
+            return var;
+        }
+    }
     vfree(var);
     void *novo = valloc(tam);
     memmove(novo, var, tamanho_origem);
@@ -104,6 +150,10 @@ void vfree(void *ptr){
         RemoverElemento(auxiliar, ObterProx(nodo), NULL);
     }
 }
+
+/////////////////////////////////////////////
+// Gerenciamento da lista auxiliar e saída //
+/////////////////////////////////////////////
 
 void inicializa_gerencia(){
     auxiliar = InicializarLdenc();

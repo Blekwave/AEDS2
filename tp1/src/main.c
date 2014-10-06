@@ -119,7 +119,7 @@ int main(int argc, char * argv[])
                 for(i=0;i<nItens*(tamItem/sizeof(char));i++){
                     if(Var[id][i]!=0)allZero = 1;
                 }
-                printf("VCALLOC %zu V%d\t%s\n",tamBloco, id, allZero==0 ? "OK" : "NOT ZERO");
+                printf("VCALLOC %zu %zu V%d\t%s\n",nItens, tamItem, id, allZero==0 ? "OK" : "NOT ZERO");
             }
             else printf("VCALLOC %zu V%d\tNULL\n",tamBloco, id);
         }
