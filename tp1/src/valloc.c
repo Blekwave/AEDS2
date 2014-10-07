@@ -62,33 +62,37 @@ void *valloc(size_t tam){
      * duz o tamanho da lacuna por tam. Retorna endereço no vetor da memória 
      * alocada ou NULL, caso não seja possível alocar a memória.
      */
-    Ndenc *lacuna = EncontrarLacuna(tam);
-    if (lacuna != NULL){
-        memchunk *temp = InicializarMemchunk(true, tam);
-        Ndenc *novo = AdicionarElemento(auxiliar, ObterAnt(lacuna), (void *)temp);
-        ObterMemchunk(lacuna)->size -= tam;
-        return (void *)EncontrarEndereco(novo);
+    if (tam > 0){
+        Ndenc *lacuna = EncontrarLacuna(tam);
+        if (lacuna != NULL){
+            memchunk *temp = InicializarMemchunk(true, tam);
+            Ndenc *novo = AdicionarElemento(auxiliar, ObterAnt(lacuna), (void *)temp);
+            ObterMemchunk(lacuna)->size -= tam;
+            if (ObterMemchunk(lacuna)->size == 0)
+                RemoverElemento(auxiliar, lacuna, NULL);
+            return (void *)EncontrarEndereco(novo);
+        }
     }
     return NULL;
 }
 
 //vcalloc
 void *vcalloc(size_t num, size_t tam){
-    int size = num*tam;
-    unsigned char *pos = (unsigned char *)valloc(size);
+    unsigned char *pos = (unsigned char *)valloc(num*tam);
     if (pos != NULL){
-        size--;
-        while (size >= 0){
-            pos[size] = 0;
-            size--;
-        }
-        return (void *)pos;
+        int i;
+        for (i = 0; i < num*tam; i++)
+            pos[i] = 0;
     }
-    return NULL;
+    return (void *)pos;
 }
 
-//vrealloc
-void *vrealloc(void *var, size_t tam){
+//vrealloc completo
+/*void *vrealloc(void *var, size_t tam){
+    if (tam == 0){
+        vfree(var);
+        return NULL;
+    }
     Ndenc *nodo = EncontrarNodo(var);
     if (nodo == NULL)
         return valloc(tam);
@@ -125,9 +129,25 @@ void *vrealloc(void *var, size_t tam){
         if (prox_memchunk->used == false && diferenca <= prox_memchunk->size){
             ObterMemchunk(nodo)->size = tam;
             prox_memchunk->size -= diferenca;
+            ///////////////////////////////////////////////////////////////////
+            // Caso o elemento adjacente livre tenha exatamente o tamanho    //
+            // necessário, ele deve ser removido, já que não deve haver ele- //
+            // mentos de espaço zero na memória.                             //
+            ///////////////////////////////////////////////////////////////////
+            if (prox_memchunk->size == 0)
+                RemoverElemento(auxiliar, prox, NULL);
             return var;
         }
     }
+    vfree(var);
+    void *novo = valloc(tam);
+    memmove(novo, var, tamanho_origem);
+    return novo;
+}*/
+
+//vrealloc preguiçoso
+void *vrealloc(void *var, size_t tam){
+    size_t tamanho_origem = ObterMemchunk(EncontrarNodo(var))->size;
     vfree(var);
     void *novo = valloc(tam);
     memmove(novo, var, tamanho_origem);
@@ -136,7 +156,11 @@ void *vrealloc(void *var, size_t tam){
 
 //vfree
 void vfree(void *ptr){
+    if (ptr == NULL)
+        return;
     Ndenc *nodo = EncontrarNodo(ptr);
+    if (nodo == NULL)
+        return;
     memchunk *atual = ObterMemchunk(nodo);
     atual->used = false;
     Ndenc *ant = ObterAnt(nodo), *prox = ObterProx(nodo);

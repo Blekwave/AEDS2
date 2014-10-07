@@ -29,6 +29,9 @@ int main(int argc, char const *argv[])
 
     imprime_status_memoria();
 
+    printf("Adulterando o elemento oob \"vetor[5]\" com o valor 144\n");
+    vetor[5] = 144;
+
     for(int i = 0; i < 20; i++)
         printf("vetor2[%d] = %d\n", i, vetor2[i]);
 
@@ -42,10 +45,37 @@ int main(int argc, char const *argv[])
     for(int i = 0; i < 20; i++)
         printf("vetor[%d] = %d\n", i, vetor[i]);
 
+    printf("Realocando o segundo vetor para 120 elementos\n");
+    vetor2 = vrealloc(vetor2, sizeof(int)*120);
+
+    imprime_status_memoria();
+
+    for(int i = 0; i < 120; i++)
+        printf("vetor2[%d] = %d\n", i, vetor2[i]);
+
+    printf("Realocando o segundo vetor para três elementos\n");
+    vetor2 = vrealloc(vetor2, sizeof(int)*3);
+
+    imprime_status_memoria();
+
+    for(int i = 0; i < 3; i++)
+        printf("vetor2[%d] = %d\n", i, vetor2[i]);
+
     vfree(vetor);
     vfree(vetor2);
 
     imprime_status_memoria();
+
+    printf("Callocando três inteiros\n");
+    vetor = vcalloc(3, sizeof(int));
+
+    for(int i = 0; i < 3; i++)
+        printf("vetor[%d] = %d\n", i, vetor[i]);
+
+    imprime_status_memoria();
+
+    vfree(vetor);
+
     finaliza_gerencia();
     return 0;
 }
