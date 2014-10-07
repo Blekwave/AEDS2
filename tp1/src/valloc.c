@@ -50,7 +50,6 @@ unsigned char *EncontrarEndereco(Ndenc *nodo){
     return init;
 }
 
-
 ////////////////////////
 // Funções principais //
 ////////////////////////
@@ -93,8 +92,11 @@ void *vcalloc(size_t num, size_t tam){
         vfree(var);
         return NULL;
     }
+    if (var == NULL){
+        return valloc(tam);
+    }
     Ndenc *nodo = EncontrarNodo(var);
-    if (nodo == NULL)
+    if (nodo == NULL) // Comportamento indefinido na documentação do realloc
         return valloc(tam);
     Ndenc *prox = ObterProx(nodo);
     size_t tamanho_origem = ObterMemchunk(nodo)->size;
@@ -139,18 +141,29 @@ void *vcalloc(size_t num, size_t tam){
             return var;
         }
     }
-    vfree(var);
     void *novo = valloc(tam);
-    memmove(novo, var, tamanho_origem);
+    if (novo != NULL){
+        memmove(novo, var, tamanho_origem);
+        vfree(var);
+    }
     return novo;
 }*/
 
 //vrealloc preguiçoso
 void *vrealloc(void *var, size_t tam){
+    if (var == NULL){
+        return valloc(tam);
+    } 
+    else if (tam == 0){
+        vfree(var);
+        return NULL;
+    }
     size_t tamanho_origem = ObterMemchunk(EncontrarNodo(var))->size;
-    vfree(var);
     void *novo = valloc(tam);
-    memmove(novo, var, tamanho_origem);
+    if (novo != NULL){
+        vfree(var);
+        memmove(novo, var, tamanho_origem);
+    }
     return novo;
 }
 
