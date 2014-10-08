@@ -1,3 +1,9 @@
+/**
+ * TP1: Alocação de Memória - Valloc.h
+ * Sistema de alocação dinâmica de memória através de vetor estático e lista
+ * Victor Pires Diniz - victorpiresdiniz@dcc.ufmg.br
+ */
+
 #ifndef _VALLOC_H_
 #define _VALLOC_H_
 
@@ -17,12 +23,12 @@ typedef struct {
 
 
 /**
- * extern unsigned char memoria[MAX_MEM]
+ * unsigned char memoria[MAX_MEM]
  * Vetor de unsigned char utilizado como memória a ser alocada pelas funções
- * da biblioteca. É inicializado no arquivo valloc.c.
+ * da biblioteca. É utilizado através da keyword "extern" em "valloc.c".
  */
 #define MAX_MEM 1024576
-extern unsigned char memoria[MAX_MEM];
+unsigned char memoria[MAX_MEM];
 
 /**
  * extern Ldenc *auxiliar
@@ -33,7 +39,7 @@ extern unsigned char memoria[MAX_MEM];
 extern Ldenc *auxiliar;
 
 /**
- * Aloca memória, se possível.
+ * Aloca memória, se possível, ocupando a primeira lacuna possível em MEM.
  * @param  tam Tamanho, em bytes, da memória alocada.
  * @return     Ponteiro para o início do bloco de memória alocado ou NULL, caso
  *             não tenha sido possível alocar o espaço requisitado.
@@ -41,7 +47,7 @@ extern Ldenc *auxiliar;
 void *valloc(size_t tam);
 
 /**
- * Aloca memória e inicializa a memória alocada com zeros.
+ * Aloca memória com valloc e inicializa a memória alocada com zeros.
  * @param  num Número de blocos a serem alocados.
  * @param  tam Tamanho de cada bloco de memória.
  * @return     Ponteiro para o início do primeiro bloco de memória alocado ou
@@ -49,12 +55,19 @@ void *valloc(size_t tam);
  */
 void *vcalloc(size_t num, size_t tam);
 
+#define REALLOC_COMPLETO 0
+
 /**
  * Aloca novo espaço na memória para a variável var, movendo seu conteúdo para
  * o novo bloco. Caso o tamanho alocado seja menor do que o disponível anterior-
  * mente, o conteúdo será truncado. O novo espaço alocado não necessariamente é
  * adjacente ao anterior, a variável pode ter espaço alocado que começa em outra
- * posição.
+ * posição. Comportamento específico depende da definição "REALLOC_COMPLETO".
+ * Caso essa definição seja 1, a função tenta realocar a memória contiguamente
+ * dentro do possível. Caso ela seja 0, a função tenta encaixar o novo bloco de
+ * memória na primeira lacuna encontrada.
+ * Se o endereço especificado para a realocação é nulo, a função se comporta co-
+ * mo malloc. Se o tamanho da realocação é nulo, a função se comporta como free.
  * @param  var Variável a ser realocada.
  * @param  tam Tamanho novo, em bytes, disponível para a variável.
  * @return     Ponteiro para o início do bloco de memória alocado ou NULL, caso
@@ -63,7 +76,7 @@ void *vcalloc(size_t num, size_t tam);
 void *vrealloc(void *var, size_t tam);
 
 /**
- * Libera o espaço alocado previamente na memória.
+ * Libera o espaço alocado previamente na memória. Não faz nada se mem é nulo.
  * @param mem Endereço do início do bloco alocado.
  */
 void vfree(void *mem);

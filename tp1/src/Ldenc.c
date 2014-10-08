@@ -4,6 +4,7 @@
 Ldenc *InicializarLdenc(){
     Ldenc *nova;
     if ((nova = (Ldenc *)malloc(sizeof(Ldenc))) != NULL){
+        // Inicializa o nodo cabeça e o atribui à primeira e à última posições
         Ndenc *cabeca = InicializarNdenc(NULL, NULL, NULL);
         nova->cabeca = nova->ultimo = cabeca;
         nova->tamanho = 0;
@@ -60,7 +61,7 @@ void RemoverElemento(Ldenc *lista, Ndenc *nodo, void(*DestruirDados)(void *)){
 };
 
 void RemoverElementoApos(Ldenc *lista, Ndenc *nodo, void(*DestruirDados)(void *)){
-    RemoverElemento(lista, nodo->prox, DestruirDados); // TODO: Fazer macro
+    RemoverElemento(lista, nodo->prox, DestruirDados);
 }
 
 void RemoverPrimeiroElemento(Ldenc *lista, void(*DestruirDados)(void *)){
@@ -150,7 +151,7 @@ Ndenc *ObterCabeca(Ldenc *lista){
     return lista->cabeca;
 }
 
-Ndenc *ObterAnterior(Ldenc *lista, Ndenc *nodo){ // Desnecessário
+Ndenc *ObterAnterior(Ldenc *lista, Ndenc *nodo){ // Redundante: ObterAnt
     return nodo->ant;
 }
 

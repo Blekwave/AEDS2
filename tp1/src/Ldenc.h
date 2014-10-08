@@ -1,9 +1,24 @@
+/**
+ * Lista duplamente encadeada - Ldenc.h
+ * Biblioteca de lista duplamente encadeada genérica com cabeça
+ * Victor Pires Diniz - victorpiresdiniz@dcc.ufmg.br
+ * 
+ * Características:
+ *   Opera de forma completamente genérica, com armazenamento de dados por meio
+ *   de ponteiros void. Permite a ordenação, travessia e remoção com funções ge-
+ *   néricas passadas por parâmetro, para comportar qualquer tipo de dados sem
+ *   necessidade de alteração no código fonte da biblioteca.
+ * 
+ *   Contém sempre pelo menos um elemento cabeça, de forma a facilitar a imple-
+ *   mentação de vários procedimentos.
+ */
+
 #ifndef _LDENC_H_
 #define _LDENC_H_
 
 #include "Ndenc.h"
 
-typedef struct {
+typedef struct ldenc {
     Ndenc *cabeca;
     Ndenc *ultimo;
     int tamanho;
@@ -128,7 +143,10 @@ Ndenc *ObterUltimo(Ldenc *lista);
 Ndenc *ObterCabeca(Ldenc *lista);
 
 /**
- * Retorna endereço do nodo anterior. O(n)
+ * Retorna endereço do nodo anterior. Função redundante: funcionalidade efetuada
+ * por ObterAnt, de "Ndenc.h". Existe para manter compatibilidade com a implemen-
+ * tação de lista encadeada simples, na qual essa operação depende da lista e é
+ * O(n).
  * @param  lista Ldenc na qual está o nodo.
  * @param  nodo  Ndenc do qual se quer o endereço do anterior.
  * @return       Endereço do nodo anterior.

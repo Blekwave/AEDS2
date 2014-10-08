@@ -3,7 +3,7 @@
 #include <string.h>
 #include <stdio.h>
 
-unsigned char memoria[MAX_MEM];
+extern unsigned char memoria[MAX_MEM];
 Ldenc *auxiliar;
 
 ////////////////////////
@@ -21,7 +21,8 @@ memchunk *ObterMemchunk(Ndenc *nodo){
     return (memchunk *)ObterDados(nodo);
 }
 
-Ndenc *EncontrarLacuna(int tam){
+// Encontra lacuna no vetor MEM onde é possível alocar "tam" bytes
+Ndenc *EncontrarLacuna(size_t tam){
     Ndenc *atual = ObterPrimeiro(auxiliar);
     // É seguro assumir que a lista auxiliar sempre tem pelo menos um elemento
     // Portanto, o do while abaixo não deve falhar em situação alguma
@@ -30,16 +31,19 @@ Ndenc *EncontrarLacuna(int tam){
     return atual;
 }
 
+// Encontra nodo na lista auxiliar correspondente ao endereço "ptr" em MEM
 Ndenc *EncontrarNodo(void *ptr){
     unsigned char *init = memoria;
     Ndenc *atual = ObterPrimeiro(auxiliar);
     while (atual != NULL && init != ptr){
-        init += ObterMemchunk(atual)->size;
+        init += ObterMemchunk(atual)->size; // Incrementa um ponteiro pelo tamanho de cada nodo
         atual = ObterProx(atual);
     }
     return atual;
 }
 
+// Encontra endereço em MEM correspondente ao nodo "nodo" na lista auxiliar
+// (operação reversa de "EncontrarNodo")
 unsigned char *EncontrarEndereco(Ndenc *nodo){
     unsigned char *init = memoria;
     Ndenc *atual = ObterPrimeiro(auxiliar);
@@ -53,6 +57,8 @@ unsigned char *EncontrarEndereco(Ndenc *nodo){
 ////////////////////////
 // Funções principais //
 ////////////////////////
+
+// (Propriamente documentadas no arquivo valloc.h)
 
 void *valloc(size_t tam){
     /**
@@ -75,19 +81,25 @@ void *valloc(size_t tam){
     return NULL;
 }
 
-//vcalloc
 void *vcalloc(size_t num, size_t tam){
     unsigned char *pos = (unsigned char *)valloc(num*tam);
     if (pos != NULL){
         int i;
         for (i = 0; i < num*tam; i++)
-            pos[i] = 0;
+            pos[i] = 0; // Zera elementos alocados
     }
     return (void *)pos;
 }
 
-//vrealloc completo
-/*void *vrealloc(void *var, size_t tam){
+#if REALLOC_COMPLETO == 1
+// vrealloc completo:
+// Difere da outra versão no sentido em que, antes de tentar achar a primeira
+// lacuna possível para realocar a memória, ele tenta operar sem modificar o
+// endereço de var. Muda a posição dos dados no vetor MEM somente quando neces-
+// sário.
+// Essa versão, apesar de estar mais de acordo com o comportamento padrão da fun-
+// ção realloc original, falha em um teste no qual a versão simples obtém êxito. 
+void *vrealloc(void *var, size_t tam){
     if (tam == 0){
         vfree(var);
         return NULL;
@@ -147,9 +159,13 @@ void *vcalloc(size_t num, size_t tam){
         vfree(var);
     }
     return novo;
-}*/
+}
 
-//vrealloc preguiçoso
+#else
+// vrealloc simples:
+// Essa versão do realloc não se comporta exatamente de acordo com o padrão
+// ISO C. No entanto, ela obtém êxito em um teste em que a versão completa e
+// conforme aos padrões da linguagem falha.
 void *vrealloc(void *var, size_t tam){
     if (var == NULL){
         return valloc(tam);
@@ -166,17 +182,18 @@ void *vrealloc(void *var, size_t tam){
     }
     return novo;
 }
+#endif
 
-//vfree
 void vfree(void *ptr){
     if (ptr == NULL)
         return;
     Ndenc *nodo = EncontrarNodo(ptr);
-    if (nodo == NULL)
+    if (nodo == NULL) // ptr não é um endereço alocado pela biblioteca
         return;
     memchunk *atual = ObterMemchunk(nodo);
     atual->used = false;
     Ndenc *ant = ObterAnt(nodo), *prox = ObterProx(nodo);
+    // O código abaixo agrega os blocos de memória adjacentes ao bloco liberado.
     // Se o anterior de ant é NULL, ele é o nodo cabeça (que não tem um memchunk)
     if (ant != NULL && ObterAnt(ant) != NULL && ObterMemchunk(ant)->used == false){
         atual->size += ObterMemchunk(ObterAnt(nodo))->size;
@@ -192,11 +209,13 @@ void vfree(void *ptr){
 // Gerenciamento da lista auxiliar e saída //
 /////////////////////////////////////////////
 
+// Inicializa a lista auxiliar e adiciona nodo correspondente à memória total
 void inicializa_gerencia(){
     auxiliar = InicializarLdenc();
     AdicionarAoInicio(auxiliar, (void *)InicializarMemchunk(false, MAX_MEM));
 }
 
+// Imprime posição, tamanho e estado de cada fragmento da memória disponível
 void imprime_status_memoria(){
     Ndenc *atual = ObterPrimeiro(auxiliar);
     int pos = 0;
@@ -204,12 +223,12 @@ void imprime_status_memoria(){
     printf("Status agora:\n");
     do {
         temp = ObterMemchunk(atual);
-        printf("Pos: %d, Size: %zu, Status: %s\n",
-            pos, temp->size, temp->used ? "USED" : "FREE");
+        printf("Pos: %d, Size: %zu, Status: %s\n", pos, temp->size, temp->used ? "USED" : "FREE");
         pos += temp->size;
     } while ((atual = ObterProx(atual)) != NULL);
 }
 
+// Finaliza a lista auxiliar
 void finaliza_gerencia(){
     DestruirLdenc(auxiliar, NULL);
 }

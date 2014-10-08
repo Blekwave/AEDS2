@@ -1,3 +1,9 @@
+/**
+ * Nodo duplamente encadeado - Ndenc.h
+ * Biblioteca auxiliar para a implementação de lista duplamente encadeada
+ * Victor Pires Diniz - victorpiresdiniz@dcc.ufmg.br
+ */
+
 #ifndef _NDENC_H_
 #define _NDENC_H_
 
