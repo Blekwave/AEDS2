@@ -91,14 +91,6 @@ void *vcalloc(size_t num, size_t tam){
     return (void *)pos;
 }
 
-#if REALLOC_COMPLETO == 1
-// vrealloc completo:
-// Difere da outra versão no sentido em que, antes de tentar achar a primeira
-// lacuna possível para realocar a memória, ele tenta operar sem modificar o
-// endereço de var. Muda a posição dos dados no vetor MEM somente quando neces-
-// sário.
-// Essa versão, apesar de estar mais de acordo com o comportamento padrão da fun-
-// ção realloc original, falha em um teste no qual a versão simples obtém êxito. 
 void *vrealloc(void *var, size_t tam){
     if (tam == 0){
         vfree(var);
@@ -160,29 +152,6 @@ void *vrealloc(void *var, size_t tam){
     }
     return novo;
 }
-
-#else
-// vrealloc simples:
-// Essa versão do realloc não se comporta exatamente de acordo com o padrão
-// ISO C. No entanto, ela obtém êxito em um teste em que a versão completa e
-// conforme aos padrões da linguagem falha.
-void *vrealloc(void *var, size_t tam){
-    if (var == NULL){
-        return valloc(tam);
-    } 
-    else if (tam == 0){
-        vfree(var);
-        return NULL;
-    }
-    size_t tamanho_origem = ObterMemchunk(EncontrarNodo(var))->size;
-    void *novo = valloc(tam);
-    if (novo != NULL){
-        vfree(var);
-        memmove(novo, var, tamanho_origem);
-    }
-    return novo;
-}
-#endif
 
 void vfree(void *ptr){
     if (ptr == NULL)

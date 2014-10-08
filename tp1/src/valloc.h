@@ -55,17 +55,11 @@ void *valloc(size_t tam);
  */
 void *vcalloc(size_t num, size_t tam);
 
-#define REALLOC_COMPLETO 0
-
 /**
  * Aloca novo espaço na memória para a variável var, movendo seu conteúdo para
  * o novo bloco. Caso o tamanho alocado seja menor do que o disponível anterior-
- * mente, o conteúdo será truncado. O novo espaço alocado não necessariamente é
- * adjacente ao anterior, a variável pode ter espaço alocado que começa em outra
- * posição. Comportamento específico depende da definição "REALLOC_COMPLETO".
- * Caso essa definição seja 1, a função tenta realocar a memória contiguamente
- * dentro do possível. Caso ela seja 0, a função tenta encaixar o novo bloco de
- * memória na primeira lacuna encontrada.
+ * mente, o conteúdo será truncado. A função tenta realocar a memória contiguamente
+ * dentro do possível.
  * Se o endereço especificado para a realocação é nulo, a função se comporta co-
  * mo malloc. Se o tamanho da realocação é nulo, a função se comporta como free.
  * @param  var Variável a ser realocada.
