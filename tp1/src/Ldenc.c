@@ -159,7 +159,7 @@ Ndenc *ObterElementoPorIndice(Ldenc *lista, int indice){
     if (indice < 0 || indice >= lista->tamanho)
         return NULL;
     Ndenc *atual = lista->cabeca->prox;
-    while (indice > 0){
+    while (indice > 0 && atual != NULL){
         atual = atual->prox;
         indice--;
     }

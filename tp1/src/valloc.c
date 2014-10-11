@@ -154,10 +154,9 @@ void *vrealloc(void *var, size_t tam){
 }
 
 void vfree(void *ptr){
-    if (ptr == NULL)
-        return;
-    Ndenc *nodo = EncontrarNodo(ptr);
-    if (nodo == NULL) // ptr não é um endereço alocado pela biblioteca
+    Ndenc *nodo;
+    if (ptr == NULL || (nodo = EncontrarNodo(ptr)) == NULL) 
+    // ptr não é um endereço alocado pela biblioteca se EncontrarNodo(ptr) == NULL
         return;
     memchunk *atual = ObterMemchunk(nodo);
     atual->used = false;
