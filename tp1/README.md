@@ -87,6 +87,8 @@ O programa foi compilado e testado no GCC 4.8.1 nos ambientes Windows (Windows 8
 Análise de complexidade
 -----------------------
 
+Ordem de complexidade no pior caso em função das operações e acessos a elementos da estrutura de dados.
+
 ### Ndenc.h ###
 
 #### Funções de interface ####
@@ -102,8 +104,26 @@ Essas funções apenas retornam ou atribuem a valores da estrutura de dados, ser
 
 #### InicializarNdenc ####
 
-Essa função apenas aloca a memória necessária para o nodo e inicializa seus valores. Sua ordem de complexidade é __O(1)__, por não conter nenhum laço de repetição ou chamada recursiva que pudesse levar a algum tipo de 
+Essa função apenas aloca a memória necessária para o nodo e inicializa seus valores. Sua ordem de complexidade é __O(1)__, por não conter nenhum laço de repetição ou chamada recursiva.
 
+#### DestruirNdenc ####
+
+A função _DestruirNdenc_, à primeira vista, aparenta ser uma função que roda em tempo constante, por não conter estruturas que permitam a repetição. No entanto, ela pode realizar uma chamada a outra função passada através de um ponteiro por um de seus argumentos. Por esse motivo, a complexidade dessa função é __O(x)__, sendo _x_ a ordem de complexidade da função chamada. Caso não seja chamada nenhuma função, _DestruirNdenc_ opera em tempo constante.
+
+#### Resumo (Ndenc.h) ####
+
+| Função           | Ordem |
+|------------------|-------|
+| ObterProx        | O(1)  |
+| DefinirProx      | O(1)  |
+| ObterAnt         | O(1)  |
+| DefinirAnt       | O(1)  |
+| ObterDados       | O(1)  |
+| DefinirDados     | O(1)  |
+| InicializarNdenc | O(1)  |
+| DestruirNdenc*   | O(x)  |
+
+*As funções marcadas recebem como parâmetro um ponteiro de função. __x__, no caso, é a ordem de complexidade da função chamada.
 
 ### Ldenc.h ###
 
@@ -161,7 +181,9 @@ A função realiza a alocação, inicialização da nova lista e adição do nod
 A função chama a função _DestruirNdenc_ para cada nodo da lista. _DestruirNdenc_ também é utilizada para liberar o nodo cabeça, mas ela é chamada com o parâmetro da função auxiliar como _NULL_, o que faz com que, nesse caso, ela assuma ordem de complexidade _O(1)_. Considerando que _DestruirNdenc_ tem ordem de complexidade _O(x)_ no resto das situações:
 
 O(_DestruirLdenc_) = O(_DestruirNdenc_)*n + 1
+
 O(_DestruirLdenc_) = O(x)*n
+
 O(_DestruirLdenc_) = O(nx)
 
 Assim, a complexidade da função é __O(nx)__.
@@ -199,9 +221,27 @@ Assim, a complexidade da função é __O(nx)__.
 
 Ordem de complexidade no pior caso em relação a acessos e operações na lista auxiliar.
 
-__n__: número de elementos da lista auxiliar. 
+__n__: número de elementos da lista auxiliar.
 
 #### Funções auxiliares ####
+
+##### InicializarMemchunk #####
+
+Apenas realiza operações na estrutura de dados e aloca memória. Similarmente a _InicializarNdenc_, tem ordem de complexidade __O(1)__.
+
+##### ObterMemchunk #####
+
+Opera como camada de abstração, sem executar nenhum loop ou chamada recursiva. Tem ordem de complexidade __O(1)__.
+
+##### Funções de busca ou travessia #####
+
+- EncontrarLacuna
+- EncontrarNodo
+- EncontrarEndereco
+
+Essas funções se comportam similarmente no sentido em que todas elas percorrem os elementos da lista auxiliar até encontrar um certo item, de acordo com um critério em particular. Isso caracteriza uma operação de busca em lista, que, por passar, em pior caso, por todos os _n_ elementos da lista, tem ordem de complexidade __O(n)__.
+
+##### Resumo (valloc.h/auxiliares) #####
 
 | Função              | Ordem |
 |---------------------|-------|
@@ -213,6 +253,24 @@ __n__: número de elementos da lista auxiliar.
 
 #### Funções principais ####
 
+##### valloc #####
+
+O pior caso da função _valloc_ ocorre quando ela encontra uma lacuna válida e aloca, de fato, a memória. Nesse caso, são feitas chamadas a várias funções, mas ainda sem nenhum laço de repetição ou chamada recursiva. As funções de maior ordem de complexidade chamadas são _EncontrarLacuna_ e _EncontrarEndereco_, ambas de ordem _O(n)_. Assim, a ordem de complexidade em pior caso da função _valloc_ é __O(n)__.
+
+##### vcalloc #####
+
+A função _vcalloc_ apenas realiza uma chamada a _valloc_ e zera os elementos no vetor da memória. Ambos os procedimentos operam em tempo linear, e, portanto, a função tem ordem de complexidade __O(n)__.
+
+##### vrealloc #####
+
+A função _vrealloc_ não contém laços de repetição ou chamadas recursivas, realizando apenas uma série de operações. As funções de maior ordem de complexidade chamadas são _EncontrarNodo_ e _memmove_, que operam ambas em tempo linear. Nesse sentido, _vrealloc_ tem ordem de complexidade __O(n)__.
+
+##### vfree #####
+
+Assim como as funções anteriores, essa função não contém loops ou chamadas recursivas. A função de maior ordem de complexidade presente, no caso, é _EncontrarNodo_, função _O(n)_. Dessa forma, _vfree_ tem ordem de complexidade __O(n)__.
+
+##### Resumo (valloc.h/principais) #####
+
 | Função   | Ordem |
 |----------|-------|
 | valloc   | O(n)  |
@@ -221,6 +279,21 @@ __n__: número de elementos da lista auxiliar.
 | vfree    | O(n)  |
 
 #### Gerenciamento da lista auxiliar e saída ####
+
+##### inicializa\_gerencia #####
+
+Essa função apenas realiza chamadas a _InicializarLdenc_, _AdicionarAoInicio_ e _InicializarMemchunk_, que operam em tempo constante. Não há loops ou chamadas recursivas, o que faz com que _inicializa\_gerencia_ tenha ordem de complexidade __O(1)__.
+
+##### imprime_status_memoria #####
+
+Essa função apenas realiza chamadas a funções que operam em tempo constante. No entanto, ela tem um loop, percorrendo toda a extensão da lista auxiliar, no qual ela realiza operações relevantes. Assim, a função tem ordem de complexidade __O(n)__.
+
+##### finaliza\_gerencia #####
+
+A única operação realizada por essa função é uma chamada a _DestruirLdenc_, destruindo a lista auxiliar sem usar uma função auxiliar para fazê-lo. Nesse contexto, _DestruirLdenc_ tem ordem de complexidade _O(n)_, e, por isso, a ordem de complexidade de _finaliza\_gerencia_ é __O(n)__.
+
+
+##### Resumo (valloc.h/aux) #####
 
 | Função                 | Ordem |
 |------------------------|-------|
