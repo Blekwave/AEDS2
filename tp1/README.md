@@ -5,6 +5,70 @@ Victor Pires Diniz - *[victorpiresdiniz@dcc.ufmg.br](mailto:victorpiresdiniz@dcc
 
 Algoritmos e Estruturas de Dados II - 2º Semestre de 2014
 
+Índice
+------
+
+- [TP1: Alocação de Memória](#tp1-alocação-de-memória)
+  - __Índice__
+  - [Introdução](#introdução)
+  - [Implementação](#implementação)
+    - [Funcionamento básico](#funcionamento-básico)
+    - [Sobre a lista auxiliar](#sobre-a-lista-auxiliar)
+    - [Comportamento das funções principais](#comportamento-das-funções-principais)
+      - [valloc](#valloc)
+      - [vcalloc](#vcalloc)
+      - [vrealloc](#vrealloc)
+      - [vfree](#vfree)
+    - [Programa principal](#programa-principal)
+    - [Detalhes técnicos](#detalhes-técnicos)
+  - [Análise de complexidade](#análise-de-complexidade)
+    - [Ndenc.h](#ndench)
+      - [Funções de interface](#funções-de-interface)
+      - [InicializarNdenc](#inicializarndenc)
+      - [DestruirNdenc](#destruirndenc)
+      - [Resumo (Ndenc.h)](#resumo-ndench)
+    - [Ldenc.h](#ldench)
+      - [Funções de adição de elementos](#funções-de-adição-de-elementos)
+      - [Funções de remoção de elementos](#funções-de-remoção-de-elementos)
+      - [Funções de interface](#funções-de-interface-1)
+      - [Funções de troca e deslocamento](#funções-de-troca-e-deslocamento)
+      - [ObterElementoPorIndice](#obterelementoporindice)
+      - [InicializarLdenc](#inicializarldenc)
+      - [DestruirLdenc](#destruirldenc)
+      - [Resumo (Ldenc.h)](#resumo-ldench)
+    - [Valloc.h](#valloch)
+      - [Funções auxiliares](#funções-auxiliares)
+        - [InicializarMemchunk](#inicializarmemchunk)
+        - [ObterMemchunk](#obtermemchunk)
+        - [Funções de busca ou travessia](#funções-de-busca-ou-travessia)
+        - [Resumo (valloc.h/auxiliares)](#resumo-vallochauxiliares)
+      - [Funções principais](#funções-principais)
+        - [valloc](#valloc-1)
+        - [vcalloc](#vcalloc-1)
+        - [vrealloc](#vrealloc-1)
+        - [vfree](#vfree-1)
+        - [Resumo (valloc.h/principais)](#resumo-vallochprincipais)
+      - [Gerenciamento da lista auxiliar e saída](#gerenciamento-da-lista-auxiliar-e-saída)
+        - [inicializa\_gerencia](#inicializa\_gerencia)
+        - [imprime_status_memoria](#imprime_status_memoria)
+        - [finaliza\_gerencia](#finaliza\_gerencia)
+        - [Resumo (valloc.h/aux)](#resumo-vallochaux)
+  - [Testes](#testes)
+    - [Sintaxe do interpretador](#sintaxe-do-interpretador)
+    - [Testes realizados](#testes-realizados)
+      - [Testes de terceiros](#testes-de-terceiros)
+        - [1.tst.i](#1tsti)
+        - [11.tst.i](#11tsti)
+        - [12.tst.i](#12tsti)
+      - [Testes de minha autoria](#testes-de-minha-autoria)
+        - [t1.i](#t1i)
+        - [t2.i](#t2i)
+      - [Teste adicional: uso da memória](#teste-adicional-uso-da-memória)
+        - [teste1.c](#teste1c)
+  - [Conclusão](#conclusão)
+  - [Anexos](#anexos)
+    - [Listagem dos programas](#listagem-dos-programas)
+
 Introdução
 ----------
 
@@ -78,11 +142,21 @@ Libera a memória alocada previamente pela biblioteca cujo endereço do início 
 
 ### Programa principal ###
 
-Nesse trabalho, o programa principal é um interpretador que permite testar o comportamento da biblioteca através de um arquivo de entrada. Esse programa foi fornecido juntamente com a documentação e, por isso, dispensa análise.
+Nesse trabalho, o programa principal é um interpretador que permite testar o comportamento da biblioteca através de um arquivo de entrada. Ele é analisado em mais detalhes na seção de testes dessa documentação.
 
 ### Detalhes técnicos ###
 
-O programa foi compilado e testado no GCC 4.8.1 nos ambientes Windows (Windows 8.1/MinGW) e Linux (Cygwin/GCC). 
+Esse programa está dividido em três bibliotecas, (`valloc`, `Ldenc`, `Ndenc`) contendo, cada uma, um arquivo `.c` e um arquivo `.h`, além do programa principal `main.c`. `Ldenc` é responsável por implementar o TAD da lista duplamente encadeada, usando `Ndenc` e a sua implementação de nodo para isso.
+
+`valloc` é a parte principal do trabalho, responsável pela implementação do sistema de alocação dinâmica de memória. Essa biblioteca também implementa um TAD rudimentar `memchunk` para auxiliar no gerenciamento da memória alocada.
+
+O programa foi compilado e testado no GCC 4.8.1 nos ambientes Windows (Windows 8.1/MinGW) e Linux (Cygwin/GCC). Ele pode ser compilado em qualquer um desses ambientes com o seguinte comando:
+
+    gcc main.c valloc.c Ldenc.c Ndenc.c -o TP1 -Wall
+
+A execução do programa, então, pode ser efetuada chamando o mesmo pela linha de comando e passando como parâmetro um arquivo de texto contendo a entrada do interpretador: (mais detalhes na seção de testes)
+
+    ./TP1 input.txt
 
 Análise de complexidade
 -----------------------
@@ -300,3 +374,734 @@ A única operação realizada por essa função é uma chamada a _DestruirLdenc_
 | inicializa_gerencia    | O(1)  |
 | imprime_status_memoria | O(n)  |
 | finaliza_gerencia      | O(n)  |
+
+Testes
+------
+
+A maior parte dos testes foram realizados através da entrada do programa principal fornecido, que é um intepretador construído para realizar testes com a biblioteca _valloc.h_.
+
+### Sintaxe do interpretador ###
+
+O programa principal lê sua entrada a partir de um arquivo de texto, especificado como parâmetro do programa. A primeira linha desse arquivo determina quantas variáveis serão utilizadas no teste, através do comando `VAR NUM`, sendo `NUM` o número de variáveis. As variáveis podem, então, ser acessadas nos outros comandos do interpretador como `VX`, substituindo-se `X` por um número de 0 a `NUM` - 1.
+
+A partir daí, as linhas seguintes determinam qual função será chamada, quais os seus parâmetros e a qual variável será atribuída sua saída, de acordo com a sintaxe abaixo:
+
+- `VALLOC TAM VAR`: chama a função `valloc` com tamanho `TAM` e atribui sua saída a `VAR`;
+- `VCALLOC TAMBLOCO NUMBLOCOS VAR`: chama a função `vcalloc` com tamanho de bloco  `TAMBLOCO`, número de blocos `NUMBLOCOS` e atribui sua saída a `VAR`;
+- `VREALLOC TAM VAR`: chama a função `vrealloc` com endereço `VAR`, tamanho `TAM` e atribui sua saída a `VAR`;
+- `VFREE VAR`: chama a função `vfree` com endereço `VAR`;
+- `PRINT`: chama a função `imprime_status_memoria`.
+
+É importante que haja apenas uma linha em branco no programa, ao final. Caso essa linha não esteja presente, o último comando não será lido. Se houver alguma linha em branco além dessa, o programa pode apresentar uma falha de segmentação.
+
+### Testes realizados ###
+
+#### Testes de terceiros ####
+
+Os testes abaixo foram fornecidos pela monitoria ou pelos professores.
+
+##### 1.tst.i #####
+
+__Entrada:__
+
+```
+VAR 2
+PRINT
+VALLOC 10 V0
+PRINT
+VCALLOC 10 2 V1
+PRINT
+VREALLOC 20 V0
+PRINT
+VFREE V0
+VFREE V1
+PRINT
+
+```
+
+__Saída:__
+
+```
+VAR 2
+Status agora:
+Pos: 0, Size: 1024576, Status: FREE
+
+VALLOC 10 V0    OK
+Status agora:
+Pos: 0, Size: 10, Status: USED
+Pos: 10, Size: 1024566, Status: FREE
+
+VCALLOC 10 2 V1 OK
+Status agora:
+Pos: 0, Size: 10, Status: USED
+Pos: 10, Size: 20, Status: USED
+Pos: 30, Size: 1024546, Status: FREE
+
+VREALLOC 20 V0  OK
+Status agora:
+Pos: 0, Size: 10, Status: FREE
+Pos: 10, Size: 20, Status: USED
+Pos: 30, Size: 20, Status: USED
+Pos: 50, Size: 1024526, Status: FREE
+
+VFREE 0
+
+VFREE 1
+Status agora:
+Pos: 0, Size: 1024576, Status: FREE
+
+```
+
+##### 11.tst.i #####
+
+__Entrada:__
+
+```
+VAR 2
+PRINT
+VALLOC 20 V0
+PRINT
+VCALLOC 10 2 V1
+PRINT
+VREALLOC 30 V0
+PRINT
+VFREE V1
+PRINT
+VALLOC 40 V1
+PRINT
+VFREE V0
+PRINT
+VCALLOC 15 2 V0
+PRINT
+VREALLOC 60 V0
+PRINT
+VREALLOC 10 V0
+PRINT
+VREALLOC 1 V1
+PRINT
+VREALLOC 10 V1
+PRINT
+VREALLOC 0 V1
+PRINT
+VFREE V1
+PRINT
+VALLOC 1024577 V1
+PRINT
+VFREE V0
+PRINT
+VFREE V1
+PRINT
+
+```
+
+__Saída:__
+
+```
+VAR 2
+Status agora:
+Pos: 0, Size: 1024576, Status: FREE
+
+VALLOC 20 V0    OK
+Status agora:
+Pos: 0, Size: 20, Status: USED
+Pos: 20, Size: 1024556, Status: FREE
+
+VCALLOC 10 2 V1 OK
+Status agora:
+Pos: 0, Size: 20, Status: USED
+Pos: 20, Size: 20, Status: USED
+Pos: 40, Size: 1024536, Status: FREE
+
+VREALLOC 30 V0  OK
+Status agora:
+Pos: 0, Size: 20, Status: FREE
+Pos: 20, Size: 20, Status: USED
+Pos: 40, Size: 30, Status: USED
+Pos: 70, Size: 1024506, Status: FREE
+
+VFREE 1
+Status agora:
+Pos: 0, Size: 40, Status: FREE
+Pos: 40, Size: 30, Status: USED
+Pos: 70, Size: 1024506, Status: FREE
+
+VALLOC 40 V1    OK
+Status agora:
+Pos: 0, Size: 40, Status: USED
+Pos: 40, Size: 30, Status: USED
+Pos: 70, Size: 1024506, Status: FREE
+
+VFREE 0
+Status agora:
+Pos: 0, Size: 40, Status: USED
+Pos: 40, Size: 1024536, Status: FREE
+
+VCALLOC 15 2 V0 OK
+Status agora:
+Pos: 0, Size: 40, Status: USED
+Pos: 40, Size: 30, Status: USED
+Pos: 70, Size: 1024506, Status: FREE
+
+VREALLOC 60 V0  OK
+Status agora:
+Pos: 0, Size: 40, Status: USED
+Pos: 40, Size: 60, Status: USED
+Pos: 100, Size: 1024476, Status: FREE
+
+VREALLOC 10 V0  OK
+Status agora:
+Pos: 0, Size: 40, Status: USED
+Pos: 40, Size: 10, Status: USED
+Pos: 50, Size: 1024526, Status: FREE
+
+VREALLOC 1 V1   OK
+Status agora:
+Pos: 0, Size: 1, Status: USED
+Pos: 1, Size: 39, Status: FREE
+Pos: 40, Size: 10, Status: USED
+Pos: 50, Size: 1024526, Status: FREE
+
+VREALLOC 10 V1  OK
+Status agora:
+Pos: 0, Size: 10, Status: USED
+Pos: 10, Size: 30, Status: FREE
+Pos: 40, Size: 10, Status: USED
+Pos: 50, Size: 1024526, Status: FREE
+
+VREALLOC 0 V1   NULL
+Status agora:
+Pos: 0, Size: 40, Status: FREE
+Pos: 40, Size: 10, Status: USED
+Pos: 50, Size: 1024526, Status: FREE
+
+VFREE 1
+Status agora:
+Pos: 0, Size: 40, Status: FREE
+Pos: 40, Size: 10, Status: USED
+Pos: 50, Size: 1024526, Status: FREE
+
+VALLOC 1024577 V1   NULL
+Status agora:
+Pos: 0, Size: 40, Status: FREE
+Pos: 40, Size: 10, Status: USED
+Pos: 50, Size: 1024526, Status: FREE
+
+VFREE 0
+Status agora:
+Pos: 0, Size: 1024576, Status: FREE
+
+VFREE 1
+Status agora:
+Pos: 0, Size: 1024576, Status: FREE
+
+```
+
+##### 12.tst.i #####
+
+__Entrada:__
+
+```
+VAR 4
+PRINT
+VALLOC 1024576 V0
+PRINT
+VALLOC 1 V3
+PRINT
+
+```
+
+__Saída:__
+
+```
+VAR 4
+Status agora:
+Pos: 0, Size: 1024576, Status: FREE
+
+VALLOC 1024576 V0   OK
+Status agora:
+Pos: 0, Size: 1024576, Status: USED
+
+VALLOC 1 V3 NULL
+Status agora:
+Pos: 0, Size: 1024576, Status: USED
+
+```
+
+#### Testes de minha autoria ####
+
+##### t1.i #####
+
+__Entrada:__
+
+```
+VAR 5
+PRINT
+VALLOC 10 V0
+VALLOC 20 V1
+VALLOC 30 V2
+PRINT
+VREALLOC 10 V1
+PRINT
+VALLOC 9 V3
+PRINT
+VFREE V3
+VFREE V1
+PRINT
+VALLOC 40 V4
+PRINT
+VREALLOC 30 V0
+PRINT
+VFREE V2
+VCALLOC 10 3 V3
+PRINT
+VFREE V3
+VFREE V4
+VFREE V0
+PRINT
+
+```
+
+__Saída:__
+
+```
+VAR 5
+Status agora:
+Pos: 0, Size: 1024576, Status: FREE
+
+VALLOC 10 V0    OK
+
+VALLOC 20 V1    OK
+
+VALLOC 30 V2    OK
+Status agora:
+Pos: 0, Size: 10, Status: USED
+Pos: 10, Size: 20, Status: USED
+Pos: 30, Size: 30, Status: USED
+Pos: 60, Size: 1024516, Status: FREE
+
+VREALLOC 10 V1  OK
+Status agora:
+Pos: 0, Size: 10, Status: USED
+Pos: 10, Size: 10, Status: USED
+Pos: 20, Size: 10, Status: FREE
+Pos: 30, Size: 30, Status: USED
+Pos: 60, Size: 1024516, Status: FREE
+
+VALLOC 9 V3 OK
+Status agora:
+Pos: 0, Size: 10, Status: USED
+Pos: 10, Size: 10, Status: USED
+Pos: 20, Size: 9, Status: USED
+Pos: 29, Size: 1, Status: FREE
+Pos: 30, Size: 30, Status: USED
+Pos: 60, Size: 1024516, Status: FREE
+
+VFREE 3
+
+VFREE 1
+Status agora:
+Pos: 0, Size: 10, Status: USED
+Pos: 10, Size: 20, Status: FREE
+Pos: 30, Size: 30, Status: USED
+Pos: 60, Size: 1024516, Status: FREE
+
+VALLOC 40 V4    OK
+Status agora:
+Pos: 0, Size: 10, Status: USED
+Pos: 10, Size: 20, Status: FREE
+Pos: 30, Size: 30, Status: USED
+Pos: 60, Size: 40, Status: USED
+Pos: 100, Size: 1024476, Status: FREE
+
+VREALLOC 30 V0  OK
+Status agora:
+Pos: 0, Size: 30, Status: USED
+Pos: 30, Size: 30, Status: USED
+Pos: 60, Size: 40, Status: USED
+Pos: 100, Size: 1024476, Status: FREE
+
+VFREE 2
+
+VCALLOC 10 3 V3 OK
+Status agora:
+Pos: 0, Size: 30, Status: USED
+Pos: 30, Size: 30, Status: USED
+Pos: 60, Size: 40, Status: USED
+Pos: 100, Size: 1024476, Status: FREE
+
+VFREE 3
+
+VFREE 4
+
+VFREE 0
+Status agora:
+Pos: 0, Size: 1024576, Status: FREE
+
+```
+
+##### t2.i #####
+
+__Entrada:__
+
+```
+VAR 1
+PRINT
+VALLOC 1024576 V0
+PRINT
+VREALLOC 1024577 V0
+PRINT
+VFREE V0
+PRINT
+
+```
+
+__Saída:__
+
+```
+VAR 1
+Status agora:
+Pos: 0, Size: 1024576, Status: FREE
+
+VALLOC 1024576 V0   OK
+Status agora:
+Pos: 0, Size: 1024576, Status: USED
+
+VREALLOC 1024577 V0 NULL
+Status agora:
+Pos: 0, Size: 1024576, Status: USED
+
+VFREE 0
+Status agora:
+Pos: 0, Size: 1024576, Status: USED
+
+```
+
+#### Teste adicional: uso da memória ####
+
+Os testes realizados com o interpretador funcionam bem para avaliar o comportamento das funções e realizar um diagnóstico completo. No entanto, eles falham em, de fato, verificar se a memória alocada pode ser utilizada corretamente.
+
+Por essa razão, foi realizado um teste adicional sem uso do interpretador, com um programa principal diferente, testando o uso da memória em situações convencionais. O teste pode ser utilizado compilando o código fonte abaixo juntamente com as bibliotecas `valloc.h`, `Ldenc.h` e `Ndenc.h`, da mesma forma que o programa principal foi compilado.
+
+##### teste1.c #####
+
+```c
+#include "valloc.h"
+#include <stdlib.h>
+#include <stdio.h>
+
+int main(int argc, char const *argv[])
+{
+    int *vetor;
+    inicializa_gerencia();
+
+    vetor = valloc(sizeof(int)*5);
+    printf("Alocando 5 inteiros (sizeof int = %d)\n", sizeof(int));
+    for(int i = 0; i < 5; i++)
+        printf("vetor[%d] = %d\n", i, vetor[i]);
+    imprime_status_memoria();
+    printf("Inicializando os elementos\n");
+    vetor[0] = 3;
+    vetor[1] = 6;
+    vetor[2] = 38;
+    vetor[3] = 12;
+    vetor[4] = 155;
+    for(int i = 0; i < 5; i++)
+        printf("vetor[%d] = %d\n", i, vetor[i]);
+
+    int *vetor2 = vcalloc(20, sizeof(int));
+    printf("Alocando 20 inteiros\n");
+
+    imprime_status_memoria();
+
+    printf("Alterando o elemento oob \"vetor[5]\" com o valor 144\n");
+    vetor[5] = 144;
+
+    for(int i = 0; i < 20; i++)
+        printf("vetor2[%d] = %d\n", i, vetor2[i]);
+
+    imprime_status_memoria();
+
+    vetor = vrealloc(vetor, sizeof(int)*20);
+    printf("Realocando o primeiro vetor para vinte elementos.\n");
+
+    imprime_status_memoria();
+
+    for(int i = 0; i < 20; i++)
+        printf("vetor[%d] = %d\n", i, vetor[i]);
+
+    printf("Realocando o segundo vetor para 120 elementos\n");
+    vetor2 = vrealloc(vetor2, sizeof(int)*120);
+
+    imprime_status_memoria();
+
+    for(int i = 0; i < 120; i++)
+        printf("vetor2[%d] = %d\n", i, vetor2[i]);
+
+    printf("Realocando o segundo vetor para tres elementos\n");
+    vetor2 = vrealloc(vetor2, sizeof(int)*3);
+
+    imprime_status_memoria();
+
+    for(int i = 0; i < 3; i++)
+        printf("vetor2[%d] = %d\n", i, vetor2[i]);
+
+    vfree(vetor);
+    vfree(vetor2);
+
+    imprime_status_memoria();
+
+    printf("Alocando tres inteiros com calloc\n");
+    vetor = vcalloc(3, sizeof(int));
+
+    for(int i = 0; i < 3; i++)
+        printf("vetor[%d] = %d\n", i, vetor[i]);
+
+    imprime_status_memoria();
+
+    vfree(vetor);
+
+    finaliza_gerencia();
+    return 0;
+}
+```
+
+__Saída:__
+
+```
+Alocando 5 inteiros (sizeof int = 4)
+vetor[0] = 0
+vetor[1] = 0
+vetor[2] = 0
+vetor[3] = 0
+vetor[4] = 0
+Status agora:
+Pos: 0, Size: 20, Status: USED
+Pos: 20, Size: 1024556, Status: FREE
+Inicializando os elementos
+vetor[0] = 3
+vetor[1] = 6
+vetor[2] = 38
+vetor[3] = 12
+vetor[4] = 155
+Alocando 20 inteiros
+Status agora:
+Pos: 0, Size: 20, Status: USED
+Pos: 20, Size: 80, Status: USED
+Pos: 100, Size: 1024476, Status: FREE
+Alterando o elemento oob "vetor[5]" com o valor 144
+vetor2[0] = 144
+vetor2[1] = 0
+vetor2[2] = 0
+vetor2[3] = 0
+vetor2[4] = 0
+vetor2[5] = 0
+vetor2[6] = 0
+vetor2[7] = 0
+vetor2[8] = 0
+vetor2[9] = 0
+vetor2[10] = 0
+vetor2[11] = 0
+vetor2[12] = 0
+vetor2[13] = 0
+vetor2[14] = 0
+vetor2[15] = 0
+vetor2[16] = 0
+vetor2[17] = 0
+vetor2[18] = 0
+vetor2[19] = 0
+Status agora:
+Pos: 0, Size: 20, Status: USED
+Pos: 20, Size: 80, Status: USED
+Pos: 100, Size: 1024476, Status: FREE
+Realocando o primeiro vetor para vinte elementos.
+Status agora:
+Pos: 0, Size: 20, Status: FREE
+Pos: 20, Size: 80, Status: USED
+Pos: 100, Size: 80, Status: USED
+Pos: 180, Size: 1024396, Status: FREE
+vetor[0] = 3
+vetor[1] = 6
+vetor[2] = 38
+vetor[3] = 12
+vetor[4] = 155
+vetor[5] = 0
+vetor[6] = 0
+vetor[7] = 0
+vetor[8] = 0
+vetor[9] = 0
+vetor[10] = 0
+vetor[11] = 0
+vetor[12] = 0
+vetor[13] = 0
+vetor[14] = 0
+vetor[15] = 0
+vetor[16] = 0
+vetor[17] = 0
+vetor[18] = 0
+vetor[19] = 0
+Realocando o segundo vetor para 120 elementos
+Status agora:
+Pos: 0, Size: 100, Status: FREE
+Pos: 100, Size: 80, Status: USED
+Pos: 180, Size: 480, Status: USED
+Pos: 660, Size: 1023916, Status: FREE
+vetor2[0] = 144
+vetor2[1] = 0
+vetor2[2] = 0
+vetor2[3] = 0
+vetor2[4] = 0
+vetor2[5] = 0
+vetor2[6] = 0
+vetor2[7] = 0
+vetor2[8] = 0
+vetor2[9] = 0
+vetor2[10] = 0
+vetor2[11] = 0
+vetor2[12] = 0
+vetor2[13] = 0
+vetor2[14] = 0
+vetor2[15] = 0
+vetor2[16] = 0
+vetor2[17] = 0
+vetor2[18] = 0
+vetor2[19] = 0
+vetor2[20] = 0
+vetor2[21] = 0
+vetor2[22] = 0
+vetor2[23] = 0
+vetor2[24] = 0
+vetor2[25] = 0
+vetor2[26] = 0
+vetor2[27] = 0
+vetor2[28] = 0
+vetor2[29] = 0
+vetor2[30] = 0
+vetor2[31] = 0
+vetor2[32] = 0
+vetor2[33] = 0
+vetor2[34] = 0
+vetor2[35] = 0
+vetor2[36] = 0
+vetor2[37] = 0
+vetor2[38] = 0
+vetor2[39] = 0
+vetor2[40] = 0
+vetor2[41] = 0
+vetor2[42] = 0
+vetor2[43] = 0
+vetor2[44] = 0
+vetor2[45] = 0
+vetor2[46] = 0
+vetor2[47] = 0
+vetor2[48] = 0
+vetor2[49] = 0
+vetor2[50] = 0
+vetor2[51] = 0
+vetor2[52] = 0
+vetor2[53] = 0
+vetor2[54] = 0
+vetor2[55] = 0
+vetor2[56] = 0
+vetor2[57] = 0
+vetor2[58] = 0
+vetor2[59] = 0
+vetor2[60] = 0
+vetor2[61] = 0
+vetor2[62] = 0
+vetor2[63] = 0
+vetor2[64] = 0
+vetor2[65] = 0
+vetor2[66] = 0
+vetor2[67] = 0
+vetor2[68] = 0
+vetor2[69] = 0
+vetor2[70] = 0
+vetor2[71] = 0
+vetor2[72] = 0
+vetor2[73] = 0
+vetor2[74] = 0
+vetor2[75] = 0
+vetor2[76] = 0
+vetor2[77] = 0
+vetor2[78] = 0
+vetor2[79] = 0
+vetor2[80] = 0
+vetor2[81] = 0
+vetor2[82] = 0
+vetor2[83] = 0
+vetor2[84] = 0
+vetor2[85] = 0
+vetor2[86] = 0
+vetor2[87] = 0
+vetor2[88] = 0
+vetor2[89] = 0
+vetor2[90] = 0
+vetor2[91] = 0
+vetor2[92] = 0
+vetor2[93] = 0
+vetor2[94] = 0
+vetor2[95] = 0
+vetor2[96] = 0
+vetor2[97] = 0
+vetor2[98] = 0
+vetor2[99] = 0
+vetor2[100] = 0
+vetor2[101] = 0
+vetor2[102] = 0
+vetor2[103] = 0
+vetor2[104] = 0
+vetor2[105] = 0
+vetor2[106] = 0
+vetor2[107] = 0
+vetor2[108] = 0
+vetor2[109] = 0
+vetor2[110] = 0
+vetor2[111] = 0
+vetor2[112] = 0
+vetor2[113] = 0
+vetor2[114] = 0
+vetor2[115] = 0
+vetor2[116] = 0
+vetor2[117] = 0
+vetor2[118] = 0
+vetor2[119] = 0
+Realocando o segundo vetor para tres elementos
+Status agora:
+Pos: 0, Size: 100, Status: FREE
+Pos: 100, Size: 80, Status: USED
+Pos: 180, Size: 12, Status: USED
+Pos: 192, Size: 1024384, Status: FREE
+vetor2[0] = 144
+vetor2[1] = 0
+vetor2[2] = 0
+Status agora:
+Pos: 0, Size: 1024576, Status: FREE
+Alocando tres inteiros com calloc
+vetor[0] = 0
+vetor[1] = 0
+vetor[2] = 0
+Status agora:
+Pos: 0, Size: 12, Status: USED
+Pos: 12, Size: 1024564, Status: FREE
+
+```
+
+Conclusão
+---------
+
+Não houve grandes problemas na implementação do trabalho, sendo possível concluí-lo dentro do prazo.
+
+As maiores dificuldades ocorreram devido a problemas no comportamento das funções principais da biblioteca em casos extremos de teste, mas com a elaboração de testes de qualidade foi possível descobrir a localização dos erros e consertá-los.
+
+Anexos
+------
+
+### Listagem dos programas ###
+
+- Ldenc.h
+- Ldenc.c
+- Ndenc.h
+- Ndenc.c
+- valloc.h
+- valloc.c
+- main.c

@@ -7,9 +7,6 @@ int main(int argc, char const *argv[])
     int *vetor;
     inicializa_gerencia();
 
-    // for (int i = 0; i < MAX_MEM; i++)
-    //     printf("%d ", memoria[i]);
-
     vetor = valloc(sizeof(int)*5);
     printf("Alocando 5 inteiros (sizeof int = %d)\n", sizeof(int));
     for(int i = 0; i < 5; i++)
@@ -29,7 +26,7 @@ int main(int argc, char const *argv[])
 
     imprime_status_memoria();
 
-    printf("Adulterando o elemento oob \"vetor[5]\" com o valor 144\n");
+    printf("Alterando o elemento oob \"vetor[5]\" com o valor 144\n");
     vetor[5] = 144;
 
     for(int i = 0; i < 20; i++)
@@ -53,7 +50,7 @@ int main(int argc, char const *argv[])
     for(int i = 0; i < 120; i++)
         printf("vetor2[%d] = %d\n", i, vetor2[i]);
 
-    printf("Realocando o segundo vetor para três elementos\n");
+    printf("Realocando o segundo vetor para tres elementos\n");
     vetor2 = vrealloc(vetor2, sizeof(int)*3);
 
     imprime_status_memoria();
@@ -66,7 +63,7 @@ int main(int argc, char const *argv[])
 
     imprime_status_memoria();
 
-    printf("Callocando três inteiros\n");
+    printf("Alocando tres inteiros com calloc\n");
     vetor = vcalloc(3, sizeof(int));
 
     for(int i = 0; i < 3; i++)
