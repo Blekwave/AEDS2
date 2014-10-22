@@ -1,5 +1,5 @@
-#ifndef _USUARIOS_H_
-#define _USUARIOS_H_
+#ifndef _USUARIO_H_
+#define _USUARIO_H_
 #include <stdbool.h>
 #include "Lista.h"
 
@@ -52,7 +52,7 @@ double Jaccard(Usuario *a, Usuario *b, int numfilmes);
  * o endereço da lista de filmes assistidos, alocada externamente.
  * @param  lista      Lista de usuários
  * @param  user_id    ID do novo usuário
- * @param  assistidos Endereço da lista de assistidos do novo usuário
+ * @param  assistidos Endereço da lista de assistidos do novo u²suário
  * @return            Endereço do novo usuário
  */
 Usuario *AdicionarUsuario(Lista *lista, int user_id, bool *assistidos);
