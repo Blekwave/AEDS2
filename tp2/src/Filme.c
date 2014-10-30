@@ -4,13 +4,14 @@
 
 /**
  * Inicializa um filme com os dados fornecidos.
- * @param filme    Endereço do filme a ser inicializado
- * @param movie_id ID do filme
- * @param titulo   Título do filme
- * @param imdb_id  ID do filme no IMDB
- * @param ano      Ano de lançamento do filme
+ * @param filme         Endereço do filme a ser inicializado.
+ * @param movie_id      ID do filme.
+ * @param titulo        Título do filme.
+ * @param imdb_id       ID do filme no IMDB.
+ * @param ano           Ano de lançamento do filme.
+ * @param visualizacoes Número de visualizações do filme.
  */
-Filme *Filme_Inicializar(int movie_id, char *titulo, int imdb_id, int ano){
+Filme *Filme_Inicializar(int movie_id, char *titulo, int imdb_id, int ano, int visualizacoes){
     Filme *filme = (Filme *)malloc(sizeof(Filme));
     filme->movie_id = movie_id;
     filme->titulo = (char *)malloc(strlen(titulo)+1);
@@ -28,6 +29,15 @@ Filme *Filme_Inicializar(int movie_id, char *titulo, int imdb_id, int ano){
 void Filme_Destruir(Filme *filme){
     free(filme->titulo);
     free(filme);
+}
+
+/**
+ * Função auxiliar para destruir filme. Construída para ser usada em conjunto
+ * com as funções de destruir lista.
+ * @param dados Endereço do usuário.
+ */
+void Filme_DestruirAux(void *dados){
+    free(((Filme *)dados)->titulo);
 }
 
 /**
@@ -53,7 +63,7 @@ char *Filme_ObterTitulo(Filme *filme){
  * @param  filme Filme
  * @return       IMDB ID do filme
  */
-int Filme_ObterIMDBId(Filme *filme){
+int Filme_ObterIMDBID(Filme *filme){
     return filme->imdb_id;
 }
 
@@ -64,4 +74,13 @@ int Filme_ObterIMDBId(Filme *filme){
  */
 int Filme_ObterMovieID(Filme *filme){
     return filme->movie_id;
+}
+
+/**
+ * Retorna o nº de visualizações do filme
+ * @param  filme Filme
+ * @return       Nº de visualizações do filme
+ */
+int Filme_ObterVisualizacoes(Filme *filme){
+    return filme->visualizacoes;
 }

@@ -6,10 +6,11 @@
  * @param  user_id    ID do usuário
  * @return            Endereço do novo usuário.
  */
-Usuario *Usuario_Inicializar(int user_id){
+Usuario *Usuario_Inicializar(int user_id, double jaccard){
     Usuario *novo = (Usuario *)malloc(sizeof(Usuario));
     novo->user_id = user_id;
-    novo->assistidos = Ldenc_Inicializar();
+    novo->jaccard = jaccard;
+    novo->assistidos = Lista_Inicializar();
     return novo;
 }
 
@@ -18,8 +19,17 @@ Usuario *Usuario_Inicializar(int user_id){
  * @param usuario Usuário a ser destruído
  */
 void Usuario_Destruir(Usuario *usuario){
-    Ldenc_Destruir(usuario->assistidos, NULL);
+    Lista_Destruir(usuario->assistidos, NULL);
     free(usuario);
+}
+
+/**
+ * Função auxiliar para destruir usuário. Construída para ser usada em conjunto
+ * com as funções de destruir lista.
+ * @param dados Endereço do usuário.
+ */
+void Usuario_DestruirAux(void *dados){
+    Lista_Destruir(((Usuario *)dados)->assistidos, NULL);
 }
 
 /**
@@ -32,10 +42,19 @@ int Usuario_ObterID(Usuario *usuario){
 }
 
 /**
+ * Retorna o coeficiente de Jaccard do usuário com outro usuário.
+ * @param  usuario Usuário do qual se quer o valor.
+ * @return         Coeficiente de Jaccard.
+ */
+double Usuario_ObterJaccard(Usuario *usuario){
+    return usuario->jaccard;
+}
+
+/**
  * Retorna o endereço da lista de filmes assistidos.
  * @param  usuario Usuário a ser lido.
  * @return         Endereço da lista de filmes assistidos.
  */
-Ldenc *Usuario_ObterAssistidos(Usuario *usuario){
+Lista *Usuario_ObterAssistidos(Usuario *usuario){
     return usuario->assistidos;
 }

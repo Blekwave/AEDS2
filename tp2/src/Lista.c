@@ -1,8 +1,8 @@
 /**
- * Lista duplamente encadeada - Ldenc.h
- * Biblioteca de lista duplamente encadeada genérica com cabeça
+ * Lista encadeada - Lista.h
+ * Biblioteca de lista encadeada genérica com cabeça
  * Victor Pires Diniz - victorpiresdiniz@dcc.ufmg.br
- * 
+ *
  * Características:
  *   Opera de forma completamente genérica, com armazenamento de dados por meio
  *   de ponteiros void. Permite a ordenação, travessia e remoção com funções ge-
@@ -13,7 +13,7 @@
  *   mentação de vários procedimentos.
  */
 
-#include "Ldenc.h"
+#include "Lista.h"
 #include <stdlib.h>
 
 /////////////////////////////////
@@ -25,11 +25,10 @@
  * como primeira e última posições da lista.
  * @return endereço da nova lista.
  */
-Ldenc *Ldenc_Inicializar(){
-    Ldenc *nova;
-    if ((nova = (Ldenc *)malloc(sizeof(Ldenc))) != NULL){
-        // Inicializa o nodo cabeça e o atribui à primeira e à última posições
-        Ndenc *cabeca = Ndenc_Inicializar(NULL, NULL, NULL);
+Lista *Lista_Inicializar(){
+    Lista *nova;
+    if ((nova = (Lista *)malloc(sizeof(Lista))) != NULL){
+        Nodo *cabeca = Nodo_Inicializar(NULL, NULL);
         nova->cabeca = nova->ultimo = cabeca;
         nova->tamanho = 0;
     }
@@ -39,17 +38,17 @@ Ldenc *Ldenc_Inicializar(){
 /**
  * Libera memória dos nodos da lista e da lista em si. Realiza o procedimento
  * DestruirDados nos dados dos nodos da lista antes da liberação.
- * @param lista Ldenc a ser liberada.
+ * @param lista Lista a ser liberada.
  * @param DestruirDados ponteiro de função void cujo parâmetro é um ponteiro
  *                      void correspondente aos dados do nodo. Pode ser NULL,
  *                      caso não haja necessidade de usar essa funcionalidade.
  */
-void Ldenc_Destruir(Ldenc *lista, void(*DestruirDados)(void *)){
-    Ndenc *atual = lista->cabeca->prox, *prox;
-    Ndenc_Destruir(lista->cabeca, NULL);
+void Lista_Destruir(Lista *lista, void(*DestruirDados)(void *)){
+    Nodo *atual = lista->cabeca->prox, *prox;
+    Nodo_Destruir(lista->cabeca, NULL);
     while (atual != NULL){
         prox = atual->prox;
-        Ndenc_Destruir(atual, DestruirDados);
+        Nodo_Destruir(atual, DestruirDados);
         atual = prox;
     }
     free(lista);
@@ -61,16 +60,14 @@ void Ldenc_Destruir(Ldenc *lista, void(*DestruirDados)(void *)){
 
 /**
  * Adiciona um novo nodo após um nodo especificado.
- * @param  lista Ldenc ao qual será adicionado o novo elemento.
- * @param  referencia Ndenc após o qual será adicionado o novo elemento
+ * @param  lista Lista ao qual será adicionado o novo elemento.
+ * @param  referencia Nodo após o qual será adicionado o novo elemento
  * @param  dados Endereço dos dados armazenados por esse elemento.
  * @return       Endereço do novo nodo adicionado.
  */
-Ndenc *Ldenc_AdicionarElemento(Ldenc *lista, Ndenc *referencia, void *dados){
-    Ndenc *novo = NULL;
-    if (referencia != NULL && (novo = Ndenc_Inicializar(dados, referencia->prox, referencia)) != NULL){
-        if (referencia->prox != NULL)
-            referencia->prox->ant = novo;
+Nodo *Lista_AdicionarElemento(Lista *lista, Nodo *referencia, void *dados){
+    Nodo *novo = NULL;
+    if (referencia != NULL && (novo = Nodo_Inicializar(dados, referencia->prox)) != NULL){
         referencia->prox = novo;
         if (lista->ultimo == referencia)
             lista->ultimo = novo;
@@ -81,15 +78,13 @@ Ndenc *Ldenc_AdicionarElemento(Ldenc *lista, Ndenc *referencia, void *dados){
 
 /**
  * Adiciona um novo nodo no início da lista.
- * @param  lista Ldenc ao qual será adicionado o novo elemento.
+ * @param  lista Lista ao qual será adicionado o novo elemento.
  * @param  dados Endereço dos dados armazenados por esse elemento.
  * @return       Endereço do novo nodo adicionado.
  */
-Ndenc *Ldenc_AdicionarAoInicio(Ldenc *lista, void *dados){
-    Ndenc *novo = NULL;
-    if ((novo = Ndenc_Inicializar(dados, lista->cabeca->prox, lista->cabeca)) != NULL){
-        if (lista->cabeca->prox != NULL)
-            lista->cabeca->prox->ant = novo;
+Nodo *Lista_AdicionarAoInicio(Lista *lista, void *dados){
+    Nodo *novo = NULL;
+    if ((novo = Nodo_Inicializar(dados, lista->cabeca->prox)) != NULL){
         lista->cabeca->prox = novo;
         if (lista->ultimo == lista->cabeca)
             lista->ultimo = novo;
@@ -100,13 +95,13 @@ Ndenc *Ldenc_AdicionarAoInicio(Ldenc *lista, void *dados){
 
 /**
  * Adiciona um novo nodo ao fim da lista.
- * @param  lista Ldenc ao qual será adicionado o novo elemento.
+ * @param  lista Lista ao qual será adicionado o novo elemento.
  * @param  dados Endereço dos dados armazenados por esse elemento.
  * @return       Endereço do novo nodo adicionado.
  */
-Ndenc *Ldenc_AdicionarAoFinal(Ldenc *lista, void *dados){
-    Ndenc *novo = NULL;
-    if ((novo = Ndenc_Inicializar(dados, NULL, lista->ultimo)) != NULL){
+Nodo *Lista_AdicionarAoFinal(Lista *lista, void *dados){
+    Nodo *novo = NULL;
+    if ((novo = Nodo_Inicializar(dados, NULL)) != NULL){
         lista->ultimo->prox = novo;
         lista->ultimo = novo;
         (lista->tamanho)++;
@@ -121,20 +116,21 @@ Ndenc *Ldenc_AdicionarAoFinal(Ldenc *lista, void *dados){
 /**
  * Remove um elemento da lista. Pode realizar um procedimento especificado para
  * destruir os dados armazenados.
- * @param lista         Ldenc da qual o elemento será removido.
- * @param nodo          Ndenc a ser removido
+ * @param lista         Lista da qual o elemento será removido.
+ * @param nodo          Nodo a ser removido
  * @param DestruirDados ponteiro de função void cujo parâmetro é um ponteiro
  *                      void correspondente aos dados do nodo. Pode ser NULL,
  *                      caso não haja necessidade de usar essa funcionalidade.
  */
-void Ldenc_RemoverElemento(Ldenc *lista, Ndenc *nodo, void(*DestruirDados)(void *)){
-    if (nodo != NULL && nodo != lista->cabeca){
-        nodo->ant->prox = nodo->prox;
+void Lista_RemoverElemento(Lista *lista, Nodo *nodo, void(*DestruirDados)(void *)){
+    Nodo *anterior = Lista_ObterAnterior(lista, nodo);
+    /* nodo != NULL e nodo != lista->cabeca não são necessários,
+     * pois anterior é NULL nesses casos */
+    if (anterior != NULL){
+        anterior->prox = nodo->prox;
         if (lista->ultimo == nodo)
-            lista->ultimo = nodo->ant;
-        else
-            nodo->prox->ant = nodo->ant; // Se o nodo é o último, nodo->prox == NULL
-        Ndenc_Destruir(nodo, DestruirDados);
+            lista->ultimo = anterior;
+        Nodo_Destruir(nodo, DestruirDados);
         (lista->tamanho)--;
     }
 };
@@ -142,33 +138,39 @@ void Ldenc_RemoverElemento(Ldenc *lista, Ndenc *nodo, void(*DestruirDados)(void 
 /**
  * Remove elemento após o nodo. Pode realizar um procedimento especificado para
  * destruir os dados armazenados.
- * @param lista         Ldenc da qual o elemento será removido.
- * @param nodo          Ndenc a ser removido
+ * @param lista         Lista da qual o elemento será removido.
+ * @param nodo          Nodo a ser removido
  * @param DestruirDados ponteiro de função void cujo parâmetro é um ponteiro
  *                      void correspondente aos dados do nodo. Pode ser NULL,
  *                      caso não haja necessidade de usar essa funcionalidade.
  */
-void Ldenc_RemoverElementoApos(Ldenc *lista, Ndenc *nodo, void(*DestruirDados)(void *)){
-    Ldenc_RemoverElemento(lista, nodo->prox, DestruirDados);
+void Lista_RemoverElementoApos(Lista *lista, Nodo *nodo, void(*DestruirDados)(void *)){
+    Nodo *temp;
+    if (nodo != NULL && nodo->prox != NULL){
+        temp = nodo->prox;
+        if (temp == lista->ultimo)
+            lista->ultimo = nodo;
+        nodo->prox = nodo->prox->prox;
+        Nodo_Destruir(temp, DestruirDados);
+        (lista->tamanho)--;
+    }
 }
 
 /**
  * Remove o primeiro elemento da lista. Pode realizar um procedimento especi-
  * ficado para destruir os dados armazenados.
- * @param lista         Ldenc da qual o elemento será removido.
+ * @param lista         Lista da qual o elemento será removido.
  * @param DestruirDados ponteiro de função void cujo parâmetro é um ponteiro
  *                      void correspondente aos dados do nodo. Pode ser NULL,
  *                      caso não haja necessidade de usar essa funcionalidade.
  */
-void Ldenc_RemoverPrimeiroElemento(Ldenc *lista, void(*DestruirDados)(void *)){
+void Lista_RemoverPrimeiroElemento(Lista *lista, void(*DestruirDados)(void *)){
     if (lista->tamanho > 0){
-        Ndenc *temp = lista->cabeca->prox;
+        Nodo *temp = lista->cabeca->prox;
         lista->cabeca->prox = lista->cabeca->prox->prox;
-        if (lista->cabeca->prox != NULL)
-            lista->cabeca->prox->ant = lista->cabeca;
         if (temp == lista->ultimo)
             lista->ultimo = lista->cabeca;
-        Ndenc_Destruir(temp, DestruirDados);
+        Nodo_Destruir(temp, DestruirDados);
         (lista->tamanho)--;
     }
 }
@@ -176,17 +178,17 @@ void Ldenc_RemoverPrimeiroElemento(Ldenc *lista, void(*DestruirDados)(void *)){
 /**
  * Remove o ultimo elemento da lista. Pode realizar um procedimento especifica
  * do para destruir os dados armazenados.
- * @param lista         Ldenc da qual o elemento será removido.
+ * @param lista         Lista da qual o elemento será removido.
  * @param DestruirDados ponteiro de função void cujo parâmetro é um ponteiro
  *                      void correspondente aos dados do nodo. Pode ser NULL,
  *                      caso não haja necessidade de usar essa funcionalidade.
  */
-void Ldenc_RemoverUltimoElemento(Ldenc *lista, void(*DestruirDados)(void *)){
+void Lista_RemoverUltimoElemento(Lista *lista, void(*DestruirDados)(void *)){
     if (lista->tamanho > 0){
-        Ndenc *temp = lista->ultimo->ant;
-        temp->prox = NULL;
-        Ndenc_Destruir(lista->ultimo, DestruirDados);
-        lista->ultimo = temp;
+        Nodo *ant = Lista_ObterAnterior(lista, lista->ultimo);
+        ant->prox = NULL;
+        Nodo_Destruir(lista->ultimo, DestruirDados);
+        lista->ultimo = ant;
         (lista->tamanho)--;
     }
 }
@@ -197,68 +199,61 @@ void Ldenc_RemoverUltimoElemento(Ldenc *lista, void(*DestruirDados)(void *)){
 
 /**
  * Desloca um nodo para a posição após o destino especificado.
- * @param lista   Ldenc na qual as operações são realizadas.
- * @param origem  Ndenc a ser deslocado
- * @param destino Ndenc após o qual origem deve ser posicionado
+ * @param lista   Lista na qual as operações são realizadas.
+ * @param origem  Nodo a ser deslocado
+ * @param destino Nodo após o qual origem deve ser posicionado
  */
-void Ldenc_DeslocarElemento(Ldenc *lista, Ndenc *origem, Ndenc *destino){
-    if (origem == destino || origem == lista->cabeca)
+void Lista_DeslocarElemento(Lista *lista, Nodo *origem, Nodo *destino){
+    Nodo *anterior;
+    if (origem == destino || (anterior = Lista_ObterAnterior(lista, origem)) == NULL)
         return;
-
+    anterior->prox = origem->prox;
+    origem->prox = destino->prox;
+    destino->prox = origem;
     if (lista->ultimo == origem)
-        lista->ultimo = origem->ant;
+        lista->ultimo = anterior;
     else if (lista->ultimo == destino)
         lista->ultimo = origem;
-
-    origem->ant->prox = origem->prox;
-    if (origem->prox != NULL)
-        origem->prox->ant = origem->ant;
-
-    origem->prox = destino->prox;
-    origem->ant = destino;
-    if (destino->prox != NULL)
-        destino->prox->ant = origem;
-    destino->prox = origem;
 }
 
 /**
  * Troca dois nodos de posição em uma lista.
- * @param lista Ldenc que contém os nodos
- * @param a     Ndenc A
- * @param b     Ndenc B
+ * @param lista Lista que contém os nodos
+ * @param a     Nodo A
+ * @param b     Nodo B
  */
-void Ldenc_TrocarElementos(Ldenc *lista, Ndenc *a, Ndenc *b){
-    Ndenc *temp;
-    if (a == b || a == lista->cabeca || b == lista->cabeca)
+void Lista_TrocarElementos(Lista *lista, Nodo *a, Nodo *b){
+    Nodo *anta, *antb, *temp;
+    if (a == b)
         return;
 
-    if (a == lista->ultimo)
-        lista->ultimo = b;
-    else if (b == lista->ultimo)
-        lista->ultimo = a;
+    temp = lista->cabeca;
+    do {
+        if (temp->prox == a)
+            anta = temp;
+        else if (temp->prox == b)
+            antb = temp;
+    } while ((temp = temp->prox) != NULL);
 
-    a->ant->prox = b;
-    if (a->prox != NULL)
-        a->prox->ant = b;
-    b->ant->prox = a;
-    if (b->prox != NULL)
-        b->prox->ant = a;
+    anta->prox = b;
+    antb->prox = a;
 
     temp = a->prox;
     a->prox = b->prox;
     b->prox = temp;
 
-    temp = a->ant;
-    a->ant = b->ant;
-    b->ant = temp;
+    if (a == lista->ultimo)
+        lista->ultimo = b;
+    else if (b == lista->ultimo)
+        lista->ultimo = a;
 }
 
 /**
  * Troca o endereço armazenado no ponteiro de dados de dois nodos de uma lista.
- * @param a Ndenc A
- * @param b Ndenc B
+ * @param a Nodo A
+ * @param b Nodo B
  */
-void Ldenc_TrocarDados(Ndenc *a, Ndenc *b){
+void Lista_TrocarDados(Nodo *a, Nodo *b){
     void *temp = a->dados;
     a->dados = b->dados;
     b->dados = temp;
@@ -266,7 +261,7 @@ void Ldenc_TrocarDados(Ndenc *a, Ndenc *b){
 
 /**
  * Ordena a lista na ordem estipulada pela função de comparação passada.
- * @param  lista      Ldenc a ser ordenada
+ * @param  lista      Lista a ser ordenada
  * @param  Comparacao Função a ser usada para determinar a ordem na qual a lista
  *                    deve ser ordenada. Os parâmetros recebidos são ponteiros
  *                    void contendo o endereço dos dados de dois elementos a e b
@@ -274,16 +269,16 @@ void Ldenc_TrocarDados(Ndenc *a, Ndenc *b){
  *                    inteiros, por exemplo, retornar a > b significa que a lista
  *                    será ordenada em ordem decrescente.
  */
-void Ldenc_InsertionSort(Ldenc *lista, int(*Comparacao)(void *, void *)){
+void Lista_InsertionSort(Lista *lista, int(*Comparacao)(void *, void *)){
     if (lista->tamanho <= 1)
         return;
-    Ndenc *atual = lista->cabeca->prox->prox, *i, *prox;
+    Nodo *atual = lista->cabeca->prox->prox, *i, *prox;
     while (atual != NULL){
         prox = atual->prox;
         i = lista->cabeca;
         while (i != atual && Comparacao(i->prox->dados, atual->dados))
             i = i->prox;
-        Ldenc_DeslocarElemento(lista, atual, i);
+        Lista_DeslocarElemento(lista, atual, i);
         atual = prox;
     }
 }
@@ -294,14 +289,14 @@ void Ldenc_InsertionSort(Ldenc *lista, int(*Comparacao)(void *, void *)){
 
 /**
  * Aplica uma função aos dados de todos os nodos válidos da lista.
- * @param  lista  Ldenc
+ * @param  lista  Lista
  * @param  Funcao função a ser aplicada aos dados dos nodos. A função deve 
  *                retornar void e ter um único argumento do tipo void *.
  */
-void Ldenc_Atravessar(Ldenc *lista, void(*Funcao)(void *)){
+void Lista_Atravessar(Lista *lista, void(*Funcao)(void *)){
     if (lista->tamanho <= 0)
         return;
-    Ndenc *atual = lista->cabeca->prox;
+    Nodo *atual = lista->cabeca->prox;
     do {
         Funcao(atual->dados);
     } while ((atual = atual->prox) != NULL);
@@ -313,55 +308,54 @@ void Ldenc_Atravessar(Ldenc *lista, void(*Funcao)(void *)){
 
 /**
  * Retorna endereço do primeiro nodo válido.
- * @param  lista Ldenc da qual se quer o elemento.
+ * @param  lista Lista da qual se quer o elemento.
  * @return       Endereço do primeiro nodo válido.
  */
-Ndenc *Ldenc_ObterPrimeiro(Ldenc *lista){
+Nodo *Lista_ObterPrimeiro(Lista *lista){
     return lista->cabeca->prox;
 }
 
 /**
  * Retorna endereço do último nodo (podendo este ser o cabeça)
- * @param  lista Ldenc da qual se quer o elemento.
+ * @param  lista Lista da qual se quer o elemento.
  * @return       Endereço do último nodo.
  */
-Ndenc *Ldenc_ObterUltimo(Ldenc *lista){
+Nodo *Lista_ObterUltimo(Lista *lista){
     return lista->ultimo;
 }
 
 /**
  * Retorna endereço do nodo cabeça.
- * @param  lista Ldenc da qual se quer o elemento.
+ * @param  lista Lista da qual se quer o elemento.
  * @return       Endereço do nodo cabeça.
  */
-Ndenc *Ldenc_ObterCabeca(Ldenc *lista){
+Nodo *Lista_ObterCabeca(Lista *lista){
     return lista->cabeca;
 }
 
 /**
- * Retorna endereço do nodo anterior. Função redundante: funcionalidade efetuada
- * por ObterAnt, de "Ndenc.h". Existe para manter compatibilidade com a implemen-
- * tação de lista encadeada simples, na qual essa operação depende da lista e é
- * O(n).
- * @param  lista Ldenc na qual está o nodo.
- * @param  nodo  Ndenc do qual se quer o endereço do anterior.
+ * Retorna endereço do nodo anterior. O(n)
+ * @param  lista Lista na qual está o nodo.
+ * @param  nodo  Nodo do qual se quer o endereço do anterior.
  * @return       Endereço do nodo anterior.
  */
-Ndenc *Ldenc_ObterAnterior(Ldenc *lista, Ndenc *nodo){ // Redundante: ObterAnt
-    return nodo->ant;
+Nodo *Lista_ObterAnterior(Lista *lista, Nodo *nodo){
+    Nodo *atual = lista->cabeca;
+    while(atual->prox != nodo && (atual = atual->prox) != NULL);
+    return atual;
 }
 
 /**
  * Retorna endereço do nodo de índice indice na lista.
- * @param  lista  Ldenc na qual está o nodo.
+ * @param  lista  Lista na qual está o nodo.
  * @param  indice Índice natural menor que o tamanho da lista.
  * @return        Endereço do nodo.
  */
-Ndenc *Ldenc_ObterElementoPorIndice(Ldenc *lista, int indice){
+Nodo *Lista_ObterElementoPorIndice(Lista *lista, int indice){
     if (indice < 0 || indice >= lista->tamanho)
         return NULL;
-    Ndenc *atual = lista->cabeca->prox;
-    while (indice > 0 && atual != NULL){
+    Nodo *atual = lista->cabeca->prox;
+    while (indice > 0){
         atual = atual->prox;
         indice--;
     }
@@ -370,10 +364,9 @@ Ndenc *Ldenc_ObterElementoPorIndice(Ldenc *lista, int indice){
 
 /**
  * Retorna o tamanho da lista, sem contar com a cabeça.
- * @param  lista Ldenc 
+ * @param  lista Lista 
  * @return       Número de elementos da lista.
  */
-int Ldenc_ObterTamanho(Ldenc *lista){
+int Lista_ObterTamanho(Lista *lista){
     return lista->tamanho;
 }
-

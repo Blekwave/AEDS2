@@ -19,7 +19,7 @@ typedef struct {
     int tam;
     bool(*Comparacao)(void *a, void *b); // a > b -> a fica à direita de b
     bool(*Igualdade)(void *a, void *b); // retorna verdadeiro se a == b
-    int(*Hash)(void *chave, int tam);
+    int(*Hash)(void *dados, int tam); // Função hash
 } HashTable_ABB;
 
 /////////////////////////////////
@@ -36,11 +36,15 @@ typedef struct {
  * @param  Igualdade  Função de comparação a ser utilizada para operações de
  *                    busca. Retorna verdadeiro se a é igual a b pelos critérios
  *                    definidos.
- * @return     Endereço da nova tabela.
+ * @param  Hash       Hash function da hash table. Retorna a posição na qual um
+ *                    elemento com certa chave deverá ficar. Recebe como parâme-
+ *                    tros os dados do elemento (dos quais ela identificará a
+ *                    chave) e o tamanho da tabela hash.
+ * @return            Endereço da nova tabela.
  */
 HashTable_ABB *HashTable_ABB_Inicializar(int tam,
     bool(*Comparacao)(void *a, void *b), bool(*Igualdade)(void *a, void *b),
-    int(*Hash)(void *chave, int tam));
+    int(*Hash)(void *dados, int tam));
 
 /**
  * Libera a memória e finaliza uma tabela. Pode realizar um procedimento genéri-
