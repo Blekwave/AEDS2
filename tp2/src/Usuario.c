@@ -3,14 +3,20 @@
 /**
  * Aloca a memória e inicializa os elementos de um novo usuário. Inicializa a
  * lista de filmes assistidos (vazia).
- * @param  user_id    ID do usuário
+ * @param  user_id    ID do usuário.
+ * @param  jaccard    Coeficiente de jaccard do usuário com outro usuário
+ * @param  assistidos Endereço da lista de filmes assistidos (ou NULL, caso se
+ *                    queira criar uma lista vazia.
  * @return            Endereço do novo usuário.
  */
-Usuario *Usuario_Inicializar(int user_id, double jaccard){
+Usuario *Usuario_Inicializar(int user_id, double jaccard, Lista *assistidos){
     Usuario *novo = (Usuario *)malloc(sizeof(Usuario));
     novo->user_id = user_id;
     novo->jaccard = jaccard;
-    novo->assistidos = Lista_Inicializar();
+    if (assistidos == NULL)
+        novo->assistidos = Lista_Inicializar();
+    else
+        novo->assistidos = assistidos;
     return novo;
 }
 

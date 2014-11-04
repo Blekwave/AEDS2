@@ -30,8 +30,7 @@ Lista *Arquivo_LerListaDeUsuarios(char *end){
     // fgets retorna NULL em EOF
     while (fgets(buffer, BUFFER_USUARIO_TAM - 1, arq) != NULL){
         pch = strtok(buffer, " ");
-        usuario = Usuario_Inicializar(atoi(pch), 0);
-        usuario->assistidos = Lista_Inicializar();
+        usuario = Usuario_Inicializar(atoi(pch), 0, NULL);
         while ((pch = strtok(NULL, " ")) != NULL){
             filme_temp = (int *)malloc(sizeof(int));
             *filme_temp = atoi(pch);
