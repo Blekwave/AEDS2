@@ -1,7 +1,5 @@
-//#include "Sugestoes.h"
-#include "HashTable_ABB.h"
+#include "Sugestoes.h"
 #include "Filme.h"
-#include "Usuario.h"
 #include <stdlib.h>
 
 //////////////////////////////////////
@@ -50,7 +48,7 @@ bool Sugestoes_FilmeIgualdade(void *a, void *b){
  */
 int Sugestoes_FilmeHash(void *dados, int tam){
     // Versão temporária muito, muito ruim
-    return (Filme_ObterVisualizacoes((Filme *)dados) % tam + tam) % tam;
+    return ((Filme *)dados)->visualizacoes % tam;
 }
 
 //////////////
@@ -100,7 +98,7 @@ int Sugestoes_UsuarioHash(void *dados, int tam){
 ///////////////////////////////
 
 // Macro para obter o movie_id de um 'Nodo *' com 'Filme *' nos dados
-#define movie_id_do_nodo(x) (((Filme *)x->dados)->movie_id)
+#define indice_do_nodo(x) (*(int *)(x->dados))
 
 /**
  * Gera um vetor de inteiros contendo as visualizações de cada filme, a partir
@@ -110,21 +108,23 @@ int Sugestoes_UsuarioHash(void *dados, int tam){
  * @return            Endereço para o vetor de número de visualizações.
  */
 int *Sugestoes_GerarVetorDeVisualizacoes(Lista *usuarios, int num_filmes){
-    int *vetor = (int *)malloc(sizeof(int)*num_filmes);
+    int *vetor = calloc(sizeof(int),num_filmes);
     Nodo *usuario_atual = Lista_ObterCabeca(usuarios);
     Nodo *filme_atual;
 
     // Itera pela lista de usuários
     while ((usuario_atual = Nodo_ObterProx(usuario_atual)) != NULL){
+        filme_atual = Lista_ObterCabeca(
+            Usuario_ObterAssistidos((Usuario *)Nodo_ObterDados(usuario_atual)));
 
-        filme_atual = Lista_ObterCabeca(Usuario_ObterAssistidos(
-            (Usuario *)ObterDados(usuario_atual)));
         // Itera pela lista de filmes assistidos
         while ((filme_atual = Nodo_ObterProx(filme_atual)) != NULL)
-            (vetor[movie_id_do_nodo(filme_atual) - 1])++;
+            (vetor[indice_do_nodo(filme_atual) - 1])++;
     }
     return vetor;
 }
+
+#include <stdio.h>
 
 /**
  * Inicializa, preenche e retorna uma hash table contendo as sugestões por po-
@@ -161,6 +161,7 @@ HashTable_ABB *Sugestoes_Popularidade(Lista *usuarios, Lista *filmes, int tamanh
             Filme_ObterAno(filme_atual),
             visualizacoes[i]
         );
+        // printf("Filme de indice %d: %d views\n", i, visualizacoes[i]);
         HashTable_ABB_AdicionarElemento(tabela, (void *)novo_filme);
         i++;
     }

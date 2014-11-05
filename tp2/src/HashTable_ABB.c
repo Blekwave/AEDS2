@@ -73,7 +73,6 @@ void HashTable_ABB_Destruir(HashTable_ABB *tabela, void(*DestruirDados)(void *da
 //////////////
 // INSERÇÃO //
 //////////////
-
 /**
  * Insere na hash table um elemento novo com dados já alocados.
  * @param  tabela HashTable_ABB na qual o elemento será adicionado.

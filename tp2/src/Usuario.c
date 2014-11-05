@@ -1,4 +1,5 @@
 #include "Usuario.h"
+#include <stdlib.h>
 
 /**
  * Aloca a memória e inicializa os elementos de um novo usuário. Inicializa a

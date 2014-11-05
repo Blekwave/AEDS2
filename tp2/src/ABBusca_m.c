@@ -332,7 +332,7 @@ void ABBusca_RemoverElemento(ABBusca *arvore, ABNodo *nodo,
  * @param  arvore Árvore da qual se quer a raiz
  * @return        Endereço da raiz da árvore
  */
-ABNodo *ObterRaiz(ABBusca *arvore){
+ABNodo *ABBusca_ObterRaiz(ABBusca *arvore){
     return arvore->raiz;
 }
 
@@ -341,6 +341,6 @@ ABNodo *ObterRaiz(ABBusca *arvore){
  * @param arvore Árvore da qual se quer redefinir o endereço
  * @param raiz   Novo endereço da raiz
  */
-void DefinirRaiz(ABBusca *arvore, ABNodo *raiz){
+void ABBusca_DefinirRaiz(ABBusca *arvore, ABNodo *raiz){
     arvore->raiz = raiz;
 }

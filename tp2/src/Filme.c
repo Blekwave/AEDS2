@@ -18,6 +18,7 @@ Filme *Filme_Inicializar(int movie_id, char *titulo, int imdb_id, int ano, int v
     strcpy(filme->titulo, titulo);
     filme->imdb_id = imdb_id;
     filme->ano = ano;
+    filme->visualizacoes = visualizacoes;
     return filme;
 }
 

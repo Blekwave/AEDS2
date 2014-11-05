@@ -11,6 +11,8 @@
  *   Tem tratamento eficiente de colisões através do uso de árvores binárias de
  *   busca para cada posição da tabela.
  */
+#ifndef _HASHTABLE_ABB_H_
+#define _HASHTABLE_ABB_H_
 
 #include "ABBusca_m.h"
 
@@ -137,3 +139,5 @@ int(*HashTable_ABB_ObterHash(HashTable_ABB *tabela))(void *chave, int tam);
  * @return        Endereço da árvore binária de busca na tabela hash.
  */
 ABBusca *HashTable_ABB_ObterABBusca(HashTable_ABB *tabela, int pos);
+
+#endif
