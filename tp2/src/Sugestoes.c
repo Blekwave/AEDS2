@@ -92,7 +92,7 @@ bool Sugestoes_UsuarioIgualdade(void *a, void *b){
  */
 int Sugestoes_UsuarioHash(void *dados, int tam){
     // Versão temporária muito, muito ruim
-    return ((int *)Usuario_ObterJaccard((Usuario *)dados) % tam + tam) % tam;
+    return (((int)Usuario_ObterJaccard((Usuario *)dados)*1000) % tam + tam) % tam;
 }
 
 ///////////////////////////////
@@ -174,42 +174,70 @@ HashTable_ABB *Sugestoes_Popularidade(Lista *usuarios, Lista *filmes, int tamanh
 // SUGESTÃO POR SIMILARIDADE //
 ///////////////////////////////
 
-#define int_nodo(x) (int *)x->dados
+#define int_nodo(x) (*(int *)x->dados)
 
 /**
  * Calcula o coeficiente de Jaccard entre dois usuários.
- * @param  a Endereço de um usuário.
- * @param  b Endereço de outro usuário.
+ * @param  usuario_a Endereço de um usuário.
+ * @param  usuario_b Endereço de outro usuário.
  * @return   Coeficiente de Jaccard entre dois usuários.
  */
-double Sugestoes_Jaccard(Usuario *a, Usuario *b){
-    Nodo *filme_atual_a = Lista_ObterPrimeiro(Usuario_ObterAssistidos(a));
-    Nodo *filme_atual_b = Lista_ObterPrimeiro(Usuario_ObterAssistidos(b));
+double Sugestoes_Jaccard(Usuario *usuario_a, Usuario *usuario_b){
+    Nodo *a = Lista_ObterPrimeiro(Usuario_ObterAssistidos(usuario_a));
+    Nodo *b = Lista_ObterPrimeiro(Usuario_ObterAssistidos(usuario_b));
 
     int intersecao = 0, uniao = 0;
-    while (filme_atual_a != NULL && filme_atual_b != NULL){
-
+    while (a != NULL && b != NULL){
+        if (a != NULL && b != NULL){
+            int val_a = int_nodo(a), val_b = int_nodo(b);
+            if (val_a == val_b){
+                intersecao++;
+                a = Nodo_ObterProx(a);
+                b = Nodo_ObterProx(b);
+            }
+            else if (val_a < val_b)
+                a = Nodo_ObterProx(a);
+            else
+                b = Nodo_ObterProx(b);
+        }
+        else if (a != NULL)
+            a = Nodo_ObterProx(a);
+        else
+            b = Nodo_ObterProx(b);
+        uniao++;
     }
+    return (double)intersecao/uniao;
 }
 
-HashTable_ABB *Sugestoes_Similaridade(Lista *usuarios, Lista *filmes, Usuario *alvo,
+/**
+ * Inicializa, preenche e retorna uma hash table contendo as sugestões por simi-
+ * laridade entre uma base de usuários e um usuário alvo.
+ * @param  usuarios     Lista de usuários
+ * @param  alvo         Usuário alvo
+ * @param  tamanho_hash Tamanho da hash table
+ * @return              Endereço da hash table
+ */
+HashTable_ABB *Sugestoes_Similaridade(Lista *usuarios, Usuario *alvo,
     int tamanho_hash){
 
     // Inicializa hash table
-    HashTable_ABB *tabela = HashTable_ABB_Inicializar(tamanho_hash
+    HashTable_ABB *tabela = HashTable_ABB_Inicializar(tamanho_hash,
         Sugestoes_UsuarioComparacao, Sugestoes_UsuarioIgualdade, Sugestoes_UsuarioHash);
 
     Nodo *nodo_atual = Lista_ObterCabeca(usuarios);
     Usuario *novo_usuario, *usuario_atual;
     
+    // Preenche a hash table com os usuários, definindo os valores de Jaccard
     while ((nodo_atual = Nodo_ObterProx(nodo_atual)) != NULL){
         usuario_atual = (Usuario *)Nodo_ObterDados(nodo_atual);
 
         novo_usuario = Usuario_Inicializar(
             Usuario_ObterID(usuario_atual),
             Sugestoes_Jaccard(alvo, usuario_atual),
+            Usuario_ObterAssistidos(usuario_atual)
+        );
 
-        )
+        HashTable_ABB_AdicionarElemento(tabela, (void *)novo_usuario);
     }
-
+    return tabela;
 }
