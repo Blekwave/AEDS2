@@ -6,7 +6,6 @@ typedef struct {
     char *titulo;
     int imdb_id;
     int ano;
-    int visualizacoes;
 } Filme;
 
 /**
@@ -16,9 +15,8 @@ typedef struct {
  * @param titulo        Título do filme.
  * @param imdb_id       ID do filme no IMDB.
  * @param ano           Ano de lançamento do filme.
- * @param visualizacoes Número de visualizações do filme.
  */
-Filme *Filme_Inicializar(int movie_id, char *titulo, int imdb_id, int ano, int visualizacoes);
+Filme *Filme_Inicializar(int movie_id, char *titulo, int imdb_id, int ano);
 
 /**
  * Libera a memória utilizada pelos elementos do filme
@@ -61,12 +59,5 @@ int Filme_ObterIMDBID(Filme *filme);
  * @return       Movie ID do filme
  */
 int Filme_ObterMovieID(Filme *filme);
-
-/**
- * Retorna o nº de visualizações do filme
- * @param  filme Filme
- * @return       Nº de visualizações do filme
- */
-int Filme_ObterVisualizacoes(Filme *filme);
 
 #endif

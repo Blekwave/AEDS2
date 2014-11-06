@@ -5,15 +5,13 @@
  * Aloca a memória e inicializa os elementos de um novo usuário. Inicializa a
  * lista de filmes assistidos (vazia).
  * @param  user_id    ID do usuário.
- * @param  jaccard    Coeficiente de jaccard do usuário com outro usuário
  * @param  assistidos Endereço da lista de filmes assistidos (ou NULL, caso se
  *                    queira criar uma lista vazia.
  * @return            Endereço do novo usuário.
  */
-Usuario *Usuario_Inicializar(int user_id, double jaccard, Lista *assistidos){
+Usuario *Usuario_Inicializar(int user_id, Lista *assistidos){
     Usuario *novo = (Usuario *)malloc(sizeof(Usuario));
     novo->user_id = user_id;
-    novo->jaccard = jaccard;
     if (assistidos == NULL)
         novo->assistidos = Lista_Inicializar();
     else
@@ -46,15 +44,6 @@ void Usuario_DestruirAux(void *dados){
  */
 int Usuario_ObterID(Usuario *usuario){
     return usuario->user_id;
-}
-
-/**
- * Retorna o coeficiente de Jaccard do usuário com outro usuário.
- * @param  usuario Usuário do qual se quer o valor.
- * @return         Coeficiente de Jaccard.
- */
-double Usuario_ObterJaccard(Usuario *usuario){
-    return usuario->jaccard;
 }
 
 /**

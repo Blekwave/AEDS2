@@ -9,16 +9,14 @@
  * @param titulo        Título do filme.
  * @param imdb_id       ID do filme no IMDB.
  * @param ano           Ano de lançamento do filme.
- * @param visualizacoes Número de visualizações do filme.
  */
-Filme *Filme_Inicializar(int movie_id, char *titulo, int imdb_id, int ano, int visualizacoes){
+Filme *Filme_Inicializar(int movie_id, char *titulo, int imdb_id, int ano){
     Filme *filme = (Filme *)malloc(sizeof(Filme));
     filme->movie_id = movie_id;
     filme->titulo = (char *)malloc(strlen(titulo)+1);
     strcpy(filme->titulo, titulo);
     filme->imdb_id = imdb_id;
     filme->ano = ano;
-    filme->visualizacoes = visualizacoes;
     return filme;
 }
 
@@ -75,13 +73,4 @@ int Filme_ObterIMDBID(Filme *filme){
  */
 int Filme_ObterMovieID(Filme *filme){
     return filme->movie_id;
-}
-
-/**
- * Retorna o nº de visualizações do filme
- * @param  filme Filme
- * @return       Nº de visualizações do filme
- */
-int Filme_ObterVisualizacoes(Filme *filme){
-    return filme->visualizacoes;
 }

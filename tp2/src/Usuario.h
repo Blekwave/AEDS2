@@ -5,7 +5,6 @@
 
 typedef struct {
     int user_id;
-    double jaccard;
     Lista *assistidos;
 } Usuario;
 
@@ -13,12 +12,11 @@ typedef struct {
  * Aloca a memória e inicializa os elementos de um novo usuário. Inicializa a
  * lista de filmes assistidos (vazia).
  * @param  user_id    ID do usuário.
- * @param  jaccard    Coeficiente de jaccard do usuário com outro usuário
  * @param  assistidos Endereço da lista de filmes assistidos (ou NULL, caso se
  *                    queira criar uma lista vazia.
  * @return            Endereço do novo usuário.
  */
-Usuario *Usuario_Inicializar(int user_id, double jaccard, Lista *assistidos);
+Usuario *Usuario_Inicializar(int user_id, Lista *assistidos);
 
 /**
  * Libera a memória do usuário e da lista de filmes.
@@ -39,13 +37,6 @@ void Usuario_DestruirAux(void *dados);
  * @return         ID do usuário.
  */
 int Usuario_ObterID(Usuario *usuario);
-
-/**
- * Retorna o coeficiente de Jaccard do usuário com outro usuário.
- * @param  usuario Usuário do qual se quer o valor.
- * @return         Coeficiente de Jaccard.
- */
-double Usuario_ObterJaccard(Usuario *usuario);
 
 /**
  * Retorna o endereço da lista de filmes assistidos.
