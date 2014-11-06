@@ -3,10 +3,13 @@
 
 #include "Lista.h"
 #include "Usuario.h"
+#include "Filme.h"
 #include "HashTable_ABB.h"
 #include <stdbool.h>
 
-// Wrappers (invólucros) para as Hash Tables
+//////////////////////////////////
+// Wrappers para as Hash Tables //
+//////////////////////////////////
 
 typedef struct {
 	int visualizacoes;
@@ -19,10 +22,21 @@ typedef struct {
 	Filme *filme;
 } Wrapper_Similaridade;
 
-// Comentar isso
+/**
+ * Inicializa um wrapper para as sugestões por popularidade.
+ * @param  visualizacoes Número de visualizações do filme.
+ * @param  filme         Endereço do filme.
+ * @return               Endereço do wrapper inicializado.
+ */
 Wrapper_Popularidade *Wrapper_Popularidade_Inicializar(int visualizacoes, Filme *filme);
 
-// Comentar isso
+/**
+ * Inicializa um wrapper para as sugestões por similaridade.
+ * @param  jaccard Coeficiente de jaccard.
+ * @param  usuario Endereço do usuário que assistiu o filme.
+ * @param  filme   Endereço do filme.
+ * @return         Endereço do wrapper.
+ */
 Wrapper_Similaridade *Wrapper_Similaridade_Inicializar(double jaccard, Usuario *usuario, Filme *filme);
 
 //////////////////////////////////////
@@ -139,8 +153,10 @@ double Sugestoes_Jaccard(Usuario *usuario_a, Usuario *usuario_b);
  * @param  filmes       Lista de filmes
  * @param  alvo         Usuário alvo
  * @param  tamanho_hash Tamanho da hash table
+ * @param  chaves       Endereço do ponteiro no qual o vetor de chaves deverá
+ *                      ser criado.
  * @return              Endereço da hash table
  */
-HashTable_ABB *Sugestoes_Similaridade(Lista *usuarios, Lista *filmes, Usuario *alvo, int tamanho_hash);
+HashTable_ABB *Sugestoes_Similaridade(Lista *usuarios, Lista *filmes, Usuario *alvo, int tamanho_hash, double **chaves);
 
 #endif

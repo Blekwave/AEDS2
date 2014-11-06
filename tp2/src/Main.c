@@ -12,11 +12,16 @@
 #define BUFFER_OUTPUT_TAM 256
 #define ENDERECO_TAM 64
 
-#define DEBUG 1 // Remover isso e o resto das gambiarras antes de enviar o trabalho
+#define DEBUG 0 // Remover isso e o resto das gambiarras antes de enviar o trabalho
 
 void ImprimirAltasParada(void *dados){
-    Filme *filme = (Filme*)dados;
-    printf("%d - %s\n", filme->movie_id, filme->titulo);
+    Wrapper_Popularidade *wrapper = (Wrapper_Popularidade *)dados;
+    printf("%d - %s\n", wrapper->filme->movie_id, wrapper->filme->titulo);
+}
+
+void ImprimirAltasParadaAlt(void *dados){
+    Wrapper_Similaridade *wrapper = (Wrapper_Similaridade *)dados;
+    printf("%d - %s\nJaccard: %f\n", wrapper->filme->movie_id, wrapper->filme->titulo, wrapper->jaccard);
 }
 
 int main(int argc, char const *argv[])
@@ -86,7 +91,7 @@ int main(int argc, char const *argv[])
     
     // Gera hash table de sugestões por popularidade
 
-    int *chaves_popularidade = malloc(sizeof(int) * num_filmes);
+    int *chaves_popularidade;
     HashTable_ABB *popularidade = Sugestoes_Popularidade(usuarios, filmes, tamanho_hash, &chaves_popularidade);
 
     if (popularidade == NULL){
@@ -104,6 +109,10 @@ int main(int argc, char const *argv[])
     while (fgets(input_buffer, BUFFER_INPUT_TAM-1, arq_input) != NULL){
         int user_id = atoi(input_buffer);
 
+        if (DEBUG){
+            printf("Usuario %d\n", user_id);
+        }
+
         // Busca por usuário na lista de usuários
         Nodo *nodo_atual = Lista_ObterCabeca(usuarios);
         while ((nodo_atual = Nodo_ObterProx(nodo_atual)) != NULL &&
@@ -114,14 +123,32 @@ int main(int argc, char const *argv[])
         else {
             // Imprimir sugestão por popularidade (placeholder)
 
-            HashTable_ABB *similaridade = Sugestoes_Similaridade(usuarios, (Usuario *)Nodo_ObterDados(nodo_atual), tamanho_hash);
+            double *chaves_similaridade; // tamanho: usuarios->tam - 1
+
+            HashTable_ABB *similaridade = Sugestoes_Similaridade(usuarios, filmes, (Usuario *)Nodo_ObterDados(nodo_atual), tamanho_hash, &chaves_similaridade);
 
             // Imprimir sugestão por similaridade (placeholder)
             if (DEBUG){
                 printf("UserID = %d\nEndereco da hash table = %p\n", user_id, similaridade);
+                int i;
+                for (i = 0; i < tamanho_hash; i++){
+                    ABBusca *arvore = HashTable_ABB_ObterABBusca(similaridade, i);
+                    printf("Arvore #%d\t", i);
+                    printf("Endereco da raiz: %p\n", arvore->raiz);
+                    ABBusca_OrdemCentral(arvore->raiz, ImprimirAltasParadaAlt);
+                }
             }
+
+            HashTable_ABB_Destruir(similaridade, NULL);
+            free(chaves_similaridade);
         }
     }
+
+    free(chaves_popularidade);
+    HashTable_ABB_Destruir(popularidade, NULL);
+
+    Lista_Destruir(filmes, Filme_DestruirAux);
+    Lista_Destruir(usuarios, Usuario_DestruirAux);
 
     // Encerramento dos arquivos de entrada e saída.
     fclose(arq_input);

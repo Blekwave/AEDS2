@@ -30,7 +30,7 @@ Lista *Arquivo_LerListaDeUsuarios(char *end){
     // fgets retorna NULL em EOF
     while (fgets(buffer, BUFFER_USUARIO_TAM - 1, arq) != NULL){
         pch = strtok(buffer, " ");
-        usuario = Usuario_Inicializar(atoi(pch), 0, NULL);
+        usuario = Usuario_Inicializar(atoi(pch), NULL);
         while ((pch = strtok(NULL, " ")) != NULL){
             filme_temp = (int *)malloc(sizeof(int));
             *filme_temp = atoi(pch);
@@ -67,7 +67,7 @@ Lista *Arquivo_LerListaDeFilmes(char *end){
         imdb_id = atoi(strtok(buffer, "\t"));
         ano = atoi(strtok(buffer, "\t"));
 
-        filme = Filme_Inicializar(movie_id, titulo, imdb_id, ano, 0);
+        filme = Filme_Inicializar(movie_id, titulo, imdb_id, ano);
         Lista_AdicionarAoFinal(lista, (void *)filme);
     }
 

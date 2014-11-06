@@ -1,18 +1,22 @@
 #include "Sugestoes.h"
 #include "Filme.h"
 #include <stdlib.h>
+#include <stdio.h>
 
-//////////////////////////////////////
-// Funções auxiliares da hash table //
-//////////////////////////////////////
+//////////////////////////////////
+// Wrappers para as Hash Tables //
+//////////////////////////////////
 
-// Wrappers
-
-// Comentar isso
+/**
+ * Inicializa um wrapper para as sugestões por popularidade.
+ * @param  visualizacoes Número de visualizações do filme.
+ * @param  filme         Endereço do filme.
+ * @return               Endereço do wrapper inicializado.
+ */
 Wrapper_Popularidade *Wrapper_Popularidade_Inicializar(int visualizacoes, Filme *filme){
 	Wrapper_Popularidade *novo = malloc(sizeof(Wrapper_Popularidade));
 	novo->visualizacoes = visualizacoes;
-	novo->filmes = filmes;
+	novo->filme = filme;
 	return novo;
 }
 
@@ -24,6 +28,10 @@ Wrapper_Similaridade *Wrapper_Similaridade_Inicializar(double jaccard, Usuario *
 	novo->filme = filme;
 	return novo;
 }
+
+//////////////////////////////////////
+// Funções auxiliares da hash table //
+//////////////////////////////////////
 
 //////////////////
 // Popularidade //
@@ -109,7 +117,7 @@ bool Sugestoes_SimilaridadeIgualdade(void *a, void *b){
  */
 int Sugestoes_SimilaridadeHash(void *dados, int tam){
     // Versão temporária muito, muito ruim
-    return ((int)(Wrapper_Similaridade *)dados->jaccard*1000) % tam;
+    return ((int)((Wrapper_Similaridade *)dados)->jaccard*1000) % tam;
 }
 
 ///////////////////////////////
@@ -147,20 +155,24 @@ int *Sugestoes_GerarVetorDeVisualizacoes(Lista *usuarios, int num_filmes){
 
 /**
  * Inicializa, preenche e retorna uma hash table contendo as sugestões por po-
- * popularidade de filmes para um conjunto de usuários.
+ * popularidade de filmes para um conjunto de usuários. Gera, também, um vetor
+ * de chaves únicas ordenadas (através de passagem do endereço do ponteiro)
  * @param  usuarios      Lista de usuários
  * @param  filmes        Lista de filmes
  * @param  tamanho_hash  Tamanho da hash table a ser gerada.
+ * @param  chaves        Endereço do ponteiro no qual o vetor de chaves deverá
+ *                       ser criado.
  * @return               Endereço da hash table.
  */
-HashTable_ABB *Sugestoes_Popularidade(Lista *usuarios, Lista *filmes, int tamanho_hash){
+HashTable_ABB *Sugestoes_Popularidade(Lista *usuarios, Lista *filmes, 
+    int tamanho_hash, int **chaves){
     // Obtém lista de visualizações
     int *visualizacoes = Sugestoes_GerarVetorDeVisualizacoes(usuarios, 
         Lista_ObterTamanho(filmes));
 
     // Inicializa hash table
     HashTable_ABB *tabela = HashTable_ABB_Inicializar(tamanho_hash,
-        Sugestoes_FilmeComparacao, Sugestoes_FilmeIgualdade, Sugestoes_FilmeHash
+        Sugestoes_PopularidadeComparacao, Sugestoes_PopularidadeIgualdade, Sugestoes_PopularidadeHash
     );
     
     // Inicializa variáveis temporárias e iteradores
@@ -181,8 +193,8 @@ HashTable_ABB *Sugestoes_Popularidade(Lista *usuarios, Lista *filmes, int tamanh
         i++;
     }
 
-    // Libera a memória da lista de visualizações, alocada no começo da função
-    free(visualizacoes);
+    // Atribui ao ponteiro de vetor de chaves o vetor de visualizações
+    *chaves = visualizacoes;
     return tabela;
 }
 
@@ -202,11 +214,14 @@ double Sugestoes_Jaccard(Usuario *usuario_a, Usuario *usuario_b){
     Nodo *a = Lista_ObterPrimeiro(Usuario_ObterAssistidos(usuario_a));
     Nodo *b = Lista_ObterPrimeiro(Usuario_ObterAssistidos(usuario_b));
 
+    // Itera pelas listas de filmes assistidos dos dois usuários
+    // Avança na lista cujo ponteiro tem o filme de menor valor
     int intersecao = 0, uniao = 0;
-    while (a != NULL && b != NULL){
+    while (a != NULL || b != NULL){
         if (a != NULL && b != NULL){
             int val_a = int_nodo(a), val_b = int_nodo(b);
             if (val_a == val_b){
+                // Ambos usuários assistiram o filme
                 intersecao++;
                 a = Nodo_ObterProx(a);
                 b = Nodo_ObterProx(b);
@@ -227,11 +242,14 @@ double Sugestoes_Jaccard(Usuario *usuario_a, Usuario *usuario_b){
 
 /**
  * Inicializa, preenche e retorna uma hash table contendo as sugestões por simi-
- * laridade entre uma base de usuários e um usuário alvo.
+ * laridade entre uma base de usuários e um usuário alvo. Gera, também, um vetor
+ * de chaves únicas ordenadas (através de passagem do endereço do ponteiro)
  * @param  usuarios     Lista de usuários
  * @param  filmes       Lista de filmes
  * @param  alvo         Usuário alvo
  * @param  tamanho_hash Tamanho da hash table
+ * @param  chaves       Endereço do ponteiro no qual o vetor de chaves deverá
+ *                      ser criado.
  * @return              Endereço da hash table
  */
 HashTable_ABB *Sugestoes_Similaridade(Lista *usuarios, Lista *filmes, Usuario *alvo,
@@ -239,34 +257,86 @@ HashTable_ABB *Sugestoes_Similaridade(Lista *usuarios, Lista *filmes, Usuario *a
 
     // Inicializa hash table
     HashTable_ABB *tabela = HashTable_ABB_Inicializar(tamanho_hash,
-        Sugestoes_UsuarioComparacao, Sugestoes_UsuarioIgualdade, Sugestoes_UsuarioHash);
+        Sugestoes_SimilaridadeComparacao, Sugestoes_SimilaridadeIgualdade, Sugestoes_SimilaridadeHash);
 
-    Nodo *nodo_atual = Lista_ObterCabeca(usuarios);
-    Wrapper_Similaridade *novo_filme;
-    Usuario *usuario_atual;
+    // Vetor com as chaves a ser retornado (através dos parâmetros)
+    *chaves = (double *)calloc(sizeof(double), Lista_ObterTamanho(usuarios) - 1);
+    int chaves_indice = 0;
     
-    // Preenche a hash table com os wrappers
-    // Cada wrapper contém uma referência ao filme e ao usuário que o assistiu
-    // O código itera pela lista de usuários
-    // Para cada usuário, ele itera pela lista de filmes assistidos,
-    // juntamente com a lista global de filmes.
-    while ((nodo_atual = Nodo_ObterProx(nodo_atual)) != NULL){
-        usuario_atual = (Usuario *)Nodo_ObterDados(nodo_atual);
-        double jaccard = Sugestoes_Jaccard(alvo, usuario_atual);
+    /////////////////////////////////////////////////////
+    // Ok, o que diabos está acontecendo ali em baixo? //
+    ///////////////////////////////////////////////////////////////////////////////
+    // Essa função itera pela lista de usuários da base de dados.                //
+    // Para cada usuário (com exceção do alvo), o programa adiciona à hash ta-   //
+    // ble os filmes que o alvo não assistiu, usando o wrapper definido no ar-   //
+    // quivo Sugestoes.h.                                                        //
+    //                                                                           //
+    // Ele faz isso passando pela lista de filmes assistidos do usuário alvo e   //
+    // de cada outro usuário de forma síncrona. Começando do início de ambas as  //
+    // listas, o programa vai avançando. Cada nodo das duas listas contém um va- //
+    // lor inteiro correspondente a um filme. As listas estão ordenadas.         //
+    //                                                                           //
+    // O programa avança o ponteiro cujo nodo tem menor valor (atribuindo a ele  //
+    // o valor de Nodo_ObterProx). Se o nodo apontado relativo ao usuário da     //
+    // iteração (não o alvo) tem valor menor, o filme correspondente a esse va-  //
+    // lor é adicionado à hash table. Se os dois tem o mesmo valor, ambos são    //
+    // incrementados. Caso a lista de filmes do alvo acabe mas a do usuário da   //
+    // iteração não, os filmes são adicionados (já que isso indica que o alvo    //
+    // não os assistiu).                                                         //
+    ///////////////////////////////////////////////////////////////////////////////
 
-        // Itera pela lista de filmes assistidos pelo usuário
-        Nodo *filme_atual = Lista_ObterCabeca(Usuario_ObterAssistidos(usuario_atual));
+    Nodo *usuarios_nodo_atual = Lista_ObterCabeca(usuarios);
+    while ((usuarios_nodo_atual = Nodo_ObterProx(usuarios_nodo_atual)) != NULL){
+        Usuario *usuario_atual = (Usuario *)Nodo_ObterDados(usuarios_nodo_atual);
 
-        while ((filme_atual = Nodo_ObterProx(filme_atual)) != NULL){
+        if (usuario_atual != alvo){
+            double jaccard = Sugestoes_Jaccard(alvo, usuario_atual);
+            (*chaves)[chaves_indice] = jaccard;
 
-            novo_filme = Wrapper_Similaridade_Inicializar(
-                jaccard,
-                (Usuario *)Nodo_ObterDados(nodo_atual),
-                (Fi) // WIP
-            );
+            Nodo *usuario_assistido_atual = Lista_ObterPrimeiro(Usuario_ObterAssistidos(usuario_atual));
+            Nodo *alvo_assistido_atual = Lista_ObterPrimeiro(Usuario_ObterAssistidos(alvo));
+            Nodo *filmes_nodo_atual = Lista_ObterPrimeiro(filmes);
+
+            // Posição numérica do ponteiro de nodo da lista de filmes.
+            // Usado para obter o endereço do filme com base em um valor numéri-
+            // co de forma relativamente eficiente.
+            int i = 1;
+
+            // Itera pela lista de filmes assistidos pelo usuário
+            while (usuario_assistido_atual != NULL){
+                int usuario_atual_val = int_nodo(usuario_assistido_atual);
+                int alvo_atual_val;
+
+                if (alvo_assistido_atual != NULL && 
+                    (alvo_atual_val = int_nodo(alvo_assistido_atual)) <= usuario_atual_val){
+                    // Casos em que não se adiciona um filme à hash table
+                    if (usuario_atual_val == alvo_atual_val){
+                        usuario_assistido_atual = Nodo_ObterProx(usuario_assistido_atual);
+                        alvo_assistido_atual = Nodo_ObterProx(alvo_assistido_atual);
+                    } else { // usuario_atual_val > alvo_atual_val
+                        alvo_assistido_atual = Nodo_ObterProx(alvo_assistido_atual);
+                    }
+                } else {
+                    // alvo_assistido_atual == NULL ou usuario_atual_val < alvo_atual_val
+                    // Se adiciona um filme à hash table
+                    while (i < usuario_atual_val){
+                        filmes_nodo_atual = Nodo_ObterProx(filmes_nodo_atual);
+                        i++;
+                    }
+
+                    // Adiciona novo filme
+                    Wrapper_Similaridade *novo_filme = 
+                        Wrapper_Similaridade_Inicializar(jaccard, usuario_atual, (Filme *)Nodo_ObterDados(filmes_nodo_atual));
+                    HashTable_ABB_AdicionarElemento(tabela, (void *)novo_filme);
+
+                    usuario_assistido_atual = Nodo_ObterProx(usuario_assistido_atual);
+                }
+            }
         }
-
-        HashTable_ABB_AdicionarElemento(tabela, (void *)novo_usuario);
     }
     return tabela;
 }
+
+/////////////////////////
+// Ordenação de chaves //
+/////////////////////////
