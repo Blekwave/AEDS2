@@ -136,10 +136,11 @@ double Sugestoes_Jaccard(Usuario *usuario_a, Usuario *usuario_b);
  * laridade entre uma base de usuários e um usuário alvo. Gera, também, um vetor
  * de chaves únicas ordenadas (através de passagem do endereço do ponteiro)
  * @param  usuarios     Lista de usuários
+ * @param  filmes       Lista de filmes
  * @param  alvo         Usuário alvo
  * @param  tamanho_hash Tamanho da hash table
  * @return              Endereço da hash table
  */
-HashTable_ABB *Sugestoes_Similaridade(Lista *usuarios, Usuario *alvo, int tamanho_hash);
+HashTable_ABB *Sugestoes_Similaridade(Lista *usuarios, Lista *filmes, Usuario *alvo, int tamanho_hash);
 
 #endif

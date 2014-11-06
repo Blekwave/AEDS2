@@ -229,12 +229,13 @@ double Sugestoes_Jaccard(Usuario *usuario_a, Usuario *usuario_b){
  * Inicializa, preenche e retorna uma hash table contendo as sugestões por simi-
  * laridade entre uma base de usuários e um usuário alvo.
  * @param  usuarios     Lista de usuários
+ * @param  filmes       Lista de filmes
  * @param  alvo         Usuário alvo
  * @param  tamanho_hash Tamanho da hash table
  * @return              Endereço da hash table
  */
-HashTable_ABB *Sugestoes_Similaridade(Lista *usuarios, Usuario *alvo,
-    int tamanho_hash){
+HashTable_ABB *Sugestoes_Similaridade(Lista *usuarios, Lista *filmes, Usuario *alvo,
+    int tamanho_hash, double **chaves){
 
     // Inicializa hash table
     HashTable_ABB *tabela = HashTable_ABB_Inicializar(tamanho_hash,
@@ -244,15 +245,26 @@ HashTable_ABB *Sugestoes_Similaridade(Lista *usuarios, Usuario *alvo,
     Wrapper_Similaridade *novo_filme;
     Usuario *usuario_atual;
     
-    // Preenche a hash table com os usuários, definindo os valores de Jaccard
+    // Preenche a hash table com os wrappers
+    // Cada wrapper contém uma referência ao filme e ao usuário que o assistiu
+    // O código itera pela lista de usuários
+    // Para cada usuário, ele itera pela lista de filmes assistidos,
+    // juntamente com a lista global de filmes.
     while ((nodo_atual = Nodo_ObterProx(nodo_atual)) != NULL){
         usuario_atual = (Usuario *)Nodo_ObterDados(nodo_atual);
+        double jaccard = Sugestoes_Jaccard(alvo, usuario_atual);
 
-        novo_filme = Wrapper_Similaridade_Inicializar(
-            Sugestoes_Jaccard(alvo, usuario_atual),
-            (Usuario *)Nodo_ObterDados(nodo_atual),
-            (Fi) // WIP
-        );
+        // Itera pela lista de filmes assistidos pelo usuário
+        Nodo *filme_atual = Lista_ObterCabeca(Usuario_ObterAssistidos(usuario_atual));
+
+        while ((filme_atual = Nodo_ObterProx(filme_atual)) != NULL){
+
+            novo_filme = Wrapper_Similaridade_Inicializar(
+                jaccard,
+                (Usuario *)Nodo_ObterDados(nodo_atual),
+                (Fi) // WIP
+            );
+        }
 
         HashTable_ABB_AdicionarElemento(tabela, (void *)novo_usuario);
     }
