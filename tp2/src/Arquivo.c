@@ -74,19 +74,3 @@ Lista *Arquivo_LerListaDeFilmes(char *end){
     fclose(arq);
     return lista;
 }
-
-/**
- * Libera a memória da lista de usuários e das estruturas auxiliares.
- * @param lista Lista a ser destruida.
- */
-void Arquivo_DestruirListaDeUsuarios(Lista *lista){
-    Lista_Destruir(lista, Usuario_DestruirAux);
-}
-
-/**
- * Libera a memória da lista de filmes e das estruturas auxiliares.
- * @param lista Lista a ser destruida.
- */
-void Arquivo_DestruirListaDeFilmes(Lista *lista){
-    Lista_Destruir(lista, Filme_DestruirAux);
-}

@@ -7,12 +7,13 @@
 #include "Usuario.h"
 #include "Filme.h"
 #include "HashTable_ABB.h"
+#include "Racional.h"
 
 #define BUFFER_INPUT_TAM 256
 #define BUFFER_OUTPUT_TAM 256
 #define ENDERECO_TAM 64
 
-#define DEBUG 0 // Remover isso e o resto das gambiarras antes de enviar o trabalho
+#define DEBUG 1 // Remover isso e o resto das gambiarras antes de enviar o trabalho
 
 void ImprimirAltasParada(void *dados){
     Wrapper_Popularidade *wrapper = (Wrapper_Popularidade *)dados;
@@ -21,7 +22,7 @@ void ImprimirAltasParada(void *dados){
 
 void ImprimirAltasParadaAlt(void *dados){
     Wrapper_Similaridade *wrapper = (Wrapper_Similaridade *)dados;
-    printf("%d - %s\nJaccard: %f\n", wrapper->filme->movie_id, wrapper->filme->titulo, wrapper->jaccard);
+    printf("%d - %s\nJaccard: %f\n", wrapper->filme->movie_id, wrapper->filme->titulo, (float)(wrapper->jaccard.num)/(wrapper->jaccard.den));
 }
 
 int main(int argc, char const *argv[])
@@ -44,6 +45,10 @@ int main(int argc, char const *argv[])
         exit(1);
     }
 
+    ///////////////////////////
+    // Leitura de parâmetros //
+    ///////////////////////////
+    
     // Interpreta a primeira linha do arquivo de entrada, que contém os endere-
     // ços, o número de recomendações e o tamanho da hash
     char input_buffer[BUFFER_INPUT_TAM];
@@ -70,6 +75,10 @@ int main(int argc, char const *argv[])
     // Imprime a primeira linha no arquivo de saída
     fprintf(arq_output, "%s\t%s\t%d\t%d\n\n", endereco_metadata, endereco_ratings,
         num_recomendacoes, tamanho_hash);
+
+    ///////////////////////////////
+    // Leitura de bases de dados //
+    ///////////////////////////////
 
     // Lê arquivos de avaliações e metadados e preenche as listas
     Lista *usuarios = Arquivo_LerListaDeUsuarios(endereco_ratings);
@@ -106,6 +115,7 @@ int main(int argc, char const *argv[])
         ABBusca_OrdemCentral(arvore->raiz, ImprimirAltasParada);
     }
     
+    // Itera pelos usuários especificados no arquivo de entrada
     while (fgets(input_buffer, BUFFER_INPUT_TAM-1, arq_input) != NULL){
         int user_id = atoi(input_buffer);
 
@@ -123,11 +133,11 @@ int main(int argc, char const *argv[])
         else {
             // Imprimir sugestão por popularidade (placeholder)
 
-            double *chaves_similaridade; // tamanho: usuarios->tam - 1
-
+            Racional *chaves_similaridade; // tamanho: usuarios->tam - 1
             HashTable_ABB *similaridade = Sugestoes_Similaridade(usuarios, filmes, (Usuario *)Nodo_ObterDados(nodo_atual), tamanho_hash, &chaves_similaridade);
 
             // Imprimir sugestão por similaridade (placeholder)
+            
             if (DEBUG){
                 printf("UserID = %d\nEndereco da hash table = %p\n", user_id, similaridade);
                 int i;

@@ -17,16 +17,4 @@ Lista *Arquivo_LerListaDeUsuarios(char *end);
  */
 Lista *Arquivo_LerListaDeFilmes(char *end);
 
-/**
- * Libera a memória da lista de usuários e das estruturas auxiliares.
- * @param lista Lista a ser destruida.
- */
-void Arquivo_DestruirListaDeUsuarios(Lista *lista);
-
-/**
- * Libera a memória da lista de filmes e das estruturas auxiliares.
- * @param lista Lista a ser destruida.
- */
-void Arquivo_DestruirListaDeFilmes(Lista *lista);
-
 #endif

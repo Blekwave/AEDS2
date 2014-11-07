@@ -5,6 +5,7 @@
 #include "Usuario.h"
 #include "Filme.h"
 #include "HashTable_ABB.h"
+#include "Racional.h"
 #include <stdbool.h>
 
 //////////////////////////////////
@@ -17,7 +18,7 @@ typedef struct {
 } Wrapper_Popularidade;
 
 typedef struct {
-	double jaccard;
+	Racional jaccard;
 	Usuario *usuario;
 	Filme *filme;
 } Wrapper_Similaridade;
@@ -37,7 +38,7 @@ Wrapper_Popularidade *Wrapper_Popularidade_Inicializar(int visualizacoes, Filme 
  * @param  filme   Endereço do filme.
  * @return         Endereço do wrapper.
  */
-Wrapper_Similaridade *Wrapper_Similaridade_Inicializar(double jaccard, Usuario *usuario, Filme *filme);
+Wrapper_Similaridade *Wrapper_Similaridade_Inicializar(Racional jaccard, Usuario *usuario, Filme *filme);
 
 //////////////////////////////////////
 // Funções auxiliares da hash table //
@@ -141,9 +142,9 @@ HashTable_ABB *Sugestoes_Popularidade(Lista *usuarios, Lista *filmes, int tamanh
  * Calcula o coeficiente de Jaccard entre dois usuários.
  * @param  usuario_a Endereço de um usuário.
  * @param  usuario_b Endereço de outro usuário.
- * @return   Coeficiente de Jaccard entre dois usuários.
+ * @return           Coeficiente de Jaccard entre dois usuários.
  */
-double Sugestoes_Jaccard(Usuario *usuario_a, Usuario *usuario_b);
+Racional Sugestoes_Jaccard(Usuario *usuario_a, Usuario *usuario_b);
 
 /**
  * Inicializa, preenche e retorna uma hash table contendo as sugestões por simi-
@@ -157,6 +158,6 @@ double Sugestoes_Jaccard(Usuario *usuario_a, Usuario *usuario_b);
  *                      ser criado.
  * @return              Endereço da hash table
  */
-HashTable_ABB *Sugestoes_Similaridade(Lista *usuarios, Lista *filmes, Usuario *alvo, int tamanho_hash, double **chaves);
+HashTable_ABB *Sugestoes_Similaridade(Lista *usuarios, Lista *filmes, Usuario *alvo, int tamanho_hash, Racional **chaves);
 
 #endif

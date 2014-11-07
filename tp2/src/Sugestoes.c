@@ -20,8 +20,14 @@ Wrapper_Popularidade *Wrapper_Popularidade_Inicializar(int visualizacoes, Filme 
 	return novo;
 }
 
-// Comentar isso
-Wrapper_Similaridade *Wrapper_Similaridade_Inicializar(double jaccard, Usuario *usuario, Filme *filme){
+/**
+ * Inicializa um wrapper para as sugestões por similaridade.
+ * @param  jaccard Coeficiente de jaccard.
+ * @param  usuario Endereço do usuário que assistiu o filme.
+ * @param  filme   Endereço do filme.
+ * @return         Endereço do wrapper.
+ */
+Wrapper_Similaridade *Wrapper_Similaridade_Inicializar(Racional jaccard, Usuario *usuario, Filme *filme){
 	Wrapper_Similaridade *novo = malloc(sizeof(Wrapper_Similaridade));
 	novo->jaccard = jaccard;
 	novo->usuario = usuario;
@@ -93,8 +99,9 @@ int Sugestoes_PopularidadeHash(void *dados, int tam){
 bool Sugestoes_SimilaridadeComparacao(void *a, void *b){
     Wrapper_Similaridade *x = (Wrapper_Similaridade *)a;
     Wrapper_Similaridade *y = (Wrapper_Similaridade *)b;
-    return x->jaccard > y->jaccard ||
-        (x->jaccard == y->jaccard && x->usuario->user_id > y->usuario->user_id);
+    int comp_jaccard = Racional_Comparar(x->jaccard, y->jaccard);
+    return comp_jaccard > 0 ||
+        (comp_jaccard == 0 && x->usuario->user_id > y->usuario->user_id);
 }
 
 /**
@@ -117,7 +124,8 @@ bool Sugestoes_SimilaridadeIgualdade(void *a, void *b){
  */
 int Sugestoes_SimilaridadeHash(void *dados, int tam){
     // Versão temporária muito, muito ruim
-    return ((int)((Wrapper_Similaridade *)dados)->jaccard*1000) % tam;
+    Racional jaccard = ((Wrapper_Similaridade *)dados)->jaccard;
+    return (jaccard.num << 2 + jaccard.den) % tam;
 }
 
 ///////////////////////////////
@@ -210,7 +218,7 @@ HashTable_ABB *Sugestoes_Popularidade(Lista *usuarios, Lista *filmes,
  * @param  usuario_b Endereço de outro usuário.
  * @return   Coeficiente de Jaccard entre dois usuários.
  */
-double Sugestoes_Jaccard(Usuario *usuario_a, Usuario *usuario_b){
+Racional Sugestoes_Jaccard(Usuario *usuario_a, Usuario *usuario_b){
     Nodo *a = Lista_ObterPrimeiro(Usuario_ObterAssistidos(usuario_a));
     Nodo *b = Lista_ObterPrimeiro(Usuario_ObterAssistidos(usuario_b));
 
@@ -237,7 +245,9 @@ double Sugestoes_Jaccard(Usuario *usuario_a, Usuario *usuario_b){
             b = Nodo_ObterProx(b);
         uniao++;
     }
-    return (double)intersecao/uniao;
+    Racional jaccard;
+    Racional_Definir(&jaccard, intersecao, uniao);
+    return jaccard;
 }
 
 /**
@@ -253,14 +263,14 @@ double Sugestoes_Jaccard(Usuario *usuario_a, Usuario *usuario_b){
  * @return              Endereço da hash table
  */
 HashTable_ABB *Sugestoes_Similaridade(Lista *usuarios, Lista *filmes, Usuario *alvo,
-    int tamanho_hash, double **chaves){
+    int tamanho_hash, Racional **chaves){
 
     // Inicializa hash table
     HashTable_ABB *tabela = HashTable_ABB_Inicializar(tamanho_hash,
         Sugestoes_SimilaridadeComparacao, Sugestoes_SimilaridadeIgualdade, Sugestoes_SimilaridadeHash);
 
     // Vetor com as chaves a ser retornado (através dos parâmetros)
-    *chaves = (double *)calloc(sizeof(double), Lista_ObterTamanho(usuarios) - 1);
+    *chaves = (Racional *)calloc(sizeof(Racional), Lista_ObterTamanho(usuarios) - 1);
     int chaves_indice = 0;
     
     /////////////////////////////////////////////////////
@@ -290,7 +300,7 @@ HashTable_ABB *Sugestoes_Similaridade(Lista *usuarios, Lista *filmes, Usuario *a
         Usuario *usuario_atual = (Usuario *)Nodo_ObterDados(usuarios_nodo_atual);
 
         if (usuario_atual != alvo){
-            double jaccard = Sugestoes_Jaccard(alvo, usuario_atual);
+            Racional jaccard = Sugestoes_Jaccard(alvo, usuario_atual);
             (*chaves)[chaves_indice] = jaccard;
 
             Nodo *usuario_assistido_atual = Lista_ObterPrimeiro(Usuario_ObterAssistidos(usuario_atual));
@@ -318,7 +328,9 @@ HashTable_ABB *Sugestoes_Similaridade(Lista *usuarios, Lista *filmes, Usuario *a
                     }
                 } else {
                     // alvo_assistido_atual == NULL ou usuario_atual_val < alvo_atual_val
-                    // Se adiciona um filme à hash table
+                    // Adiciona-se um filme à hash table
+
+                    // Encontra na lista de filmes o filme 
                     while (i < usuario_atual_val){
                         filmes_nodo_atual = Nodo_ObterProx(filmes_nodo_atual);
                         i++;
@@ -336,7 +348,3 @@ HashTable_ABB *Sugestoes_Similaridade(Lista *usuarios, Lista *filmes, Usuario *a
     }
     return tabela;
 }
-
-/////////////////////////
-// Ordenação de chaves //
-/////////////////////////
