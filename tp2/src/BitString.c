@@ -45,7 +45,7 @@ chunk BitString_ObterBit(BitString *bitstring, int pos){
  * @param pos       Posição do bit na string, de 0 a tamanho - 1
  * @param val       Novo valor binário do bit.
  */
-void BitString_DefinirBit(BitString *bitstring, int pos, chunk val){
+void BitString_DefinirBit(BitString *bitstring, int pos, char val){
     if (val)
         (bitstring->vetor)[pos/(bitstring->tam_bloco)] |= 1 << pos % (bitstring->tam_bloco);
     else

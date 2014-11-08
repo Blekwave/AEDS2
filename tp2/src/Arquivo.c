@@ -33,7 +33,7 @@ Lista *Arquivo_LerListaDeUsuarios(char *end){
         usuario = Usuario_Inicializar(atoi(pch), NULL);
         while ((pch = strtok(NULL, " ")) != NULL){
             filme_temp = (int *)malloc(sizeof(int));
-            *filme_temp = atoi(pch);
+            *filme_temp = atoi(pch) - 1; // Fix de paridade
             Lista_AdicionarAoFinal(usuario->assistidos, (void *)filme_temp);
         }
         Lista_AdicionarAoFinal(lista, (void *)usuario);
@@ -43,8 +43,68 @@ Lista *Arquivo_LerListaDeUsuarios(char *end){
     return lista;
 }
 
+
+static void QuicksortFilmeC(Filme **vetor, int inicio, int fim){
+    // Partição
+    int p_i = inicio, p_f = fim;
+    int pivo = (vetor[(inicio+fim)/2])->movie_id;
+    while (p_i <= p_f){
+        while ((vetor[p_i])->movie_id < pivo) p_i++;
+        while ((vetor[p_f])->movie_id > pivo) p_f--;
+        if (p_i <= p_f){
+            Filme *temp = vetor[p_i];
+            vetor[p_i] = vetor[p_f];
+            vetor[p_f] = temp;
+            p_i++;
+            p_f--;
+        }
+    }
+    // Chamada recursiva
+    if (inicio < p_f)
+        QuicksortFilmeC(vetor, inicio, p_f);
+    if (p_i < fim)
+        QuicksortFilmeC(vetor, p_i, fim);
+}
+
 /**
- * Preenche uma lista encadeada com os filmes lidos de um arquivo.
+ * Ordena a lista de filmes usando um vetor auxiliar e quicksort. A ordenação é
+ * feita em ordem crescente, tomando o movie_id dos filmes como critério.
+ * @param lista Lista de Filmes criada por Arquivo_LerListaDeFilmes.
+ */
+static void OrdenarListaDeFilmes(Lista *lista){
+    int vetor_tam = Lista_ObterTamanho(lista);
+    Filme **vetor = malloc(sizeof(Filme *) * vetor_tam);
+
+    // Itera pela lista de filmes, destruindo a lista e populando o vetor de
+    // ponteiros de filme.
+    Nodo *lista_nodo = Lista_ObterPrimeiro(lista);
+    int i = 0;
+    while (lista_nodo != NULL){
+        vetor[i] = (Filme *)Nodo_ObterDados(lista_nodo);
+        i++;
+        Nodo *prox = Nodo_ObterProx(lista_nodo);
+        free(lista_nodo);
+        lista_nodo = prox;
+    }
+
+    // Redefine a lista como vazia
+    lista->tamanho = 0;
+    lista->ultimo = lista->cabeca;
+    lista->cabeca->prox = NULL;
+
+    // Ordena o vetor
+    QuicksortFilmeC(vetor, 0, vetor_tam - 1);
+
+    // Preenche novamente a lista, em ordem.
+    for(i = 0; i < vetor_tam; i++)
+        Lista_AdicionarAoFinal(lista, (void *)vetor[i]);
+
+    free(vetor);
+}
+
+/**
+ * Preenche uma lista encadeada com os filmes lidos de um arquivo. Ordena a
+ * lista em ordem crescente por movie_id.
  * @param  end   Endereço do arquivo a ser lido.
  * @return       Endereço da lista encadeada inicializada (ou NULL)
  */
@@ -54,7 +114,7 @@ Lista *Arquivo_LerListaDeFilmes(char *end){
         return NULL;
 
     // Buffers de leitura
-    char buffer[BUFFER_FILME_TAM], titulo[BUFFER_TITULO_TAM], *pch;
+    char buffer[BUFFER_FILME_TAM], titulo[BUFFER_TITULO_TAM];
     Filme *filme;
     int movie_id, imdb_id, ano;
 
@@ -72,5 +132,8 @@ Lista *Arquivo_LerListaDeFilmes(char *end){
     }
 
     fclose(arq);
+
+    OrdenarListaDeFilmes(lista);
+
     return lista;
 }

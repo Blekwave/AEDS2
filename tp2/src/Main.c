@@ -8,6 +8,7 @@
 #include "Filme.h"
 #include "HashTable_ABB.h"
 #include "Racional.h"
+#include "Sort.h"
 
 #define BUFFER_INPUT_TAM 256
 #define BUFFER_OUTPUT_TAM 256
@@ -55,7 +56,7 @@ int main(int argc, char const *argv[])
     fgets(input_buffer, BUFFER_INPUT_TAM-1, arq_input);
     
     char endereco_metadata[ENDERECO_TAM], endereco_ratings[ENDERECO_TAM];
-    int num_recomendacoes, tamanho_hash;
+    int num_sugestoes, tamanho_hash;
     char *pch;
 
     pch = strtok(input_buffer, "\t");
@@ -65,7 +66,7 @@ int main(int argc, char const *argv[])
     strcpy(endereco_ratings, pch);
 
     pch = strtok(NULL, "\t");
-    num_recomendacoes = atoi(pch);
+    num_sugestoes = atoi(pch);
 
     pch = strtok(NULL, "\t");
     tamanho_hash = atoi(pch);
@@ -74,7 +75,7 @@ int main(int argc, char const *argv[])
 
     // Imprime a primeira linha no arquivo de saída
     fprintf(arq_output, "%s\t%s\t%d\t%d\n\n", endereco_metadata, endereco_ratings,
-        num_recomendacoes, tamanho_hash);
+        num_sugestoes, tamanho_hash);
 
     ///////////////////////////////
     // Leitura de bases de dados //
@@ -89,9 +90,21 @@ int main(int argc, char const *argv[])
         exit(1);
     }
 
+    int num_filmes = Lista_ObterTamanho(filmes),
+        num_usuarios = Lista_ObterTamanho(usuarios);
+
     if (DEBUG){
-        int num_filmes = Lista_ObterTamanho(filmes), num_usuarios = Lista_ObterTamanho(usuarios);
         printf("Numero de usuarios = %d\nNumero de filmes = %d\n", num_usuarios, num_filmes);
+    }
+
+    if (DEBUG){
+        Nodo *nodo_atual = Lista_ObterPrimeiro(filmes);
+        while (nodo_atual != NULL){
+            Filme *filme_atual = (Filme *)Nodo_ObterDados(nodo_atual);
+            printf("ID: %d | Titulo: %s\n", filme_atual->movie_id, filme_atual->titulo);
+            nodo_atual = Nodo_ObterProx(nodo_atual);
+        }
+        printf("Fim\n");
     }
     
     ///////////////
@@ -102,6 +115,7 @@ int main(int argc, char const *argv[])
 
     int *chaves_popularidade;
     HashTable_ABB *popularidade = Sugestoes_Popularidade(usuarios, filmes, tamanho_hash, &chaves_popularidade);
+    HeapsortIntD(chaves_popularidade, num_filmes);
 
     if (popularidade == NULL){
         fprintf(stderr, "ERRO: Falha na geracao de sugestoes por popularidade.\n");
@@ -120,7 +134,7 @@ int main(int argc, char const *argv[])
         int user_id = atoi(input_buffer);
 
         if (DEBUG){
-            printf("Usuario %d\n", user_id);
+            printf("\nUsuario %d\n", user_id);
         }
 
         // Busca por usuário na lista de usuários
@@ -131,21 +145,34 @@ int main(int argc, char const *argv[])
         if (nodo_atual == NULL)
             fprintf(stderr, "ERRO: Usuario de id %d nao existe na base de dados\n", user_id);
         else {
-            // Imprimir sugestão por popularidade (placeholder)
+            Usuario *usuario_atual = (Usuario *)Nodo_ObterDados(nodo_atual);
+
+            fprintf(arq_output, "%d:\nMost popular\n", user_id);
+
+            Sugestoes_ImprimirPopularidade(popularidade, chaves_popularidade,
+                num_filmes, usuario_atual, num_sugestoes, arq_output);
 
             Racional *chaves_similaridade; // tamanho: usuarios->tam - 1
             HashTable_ABB *similaridade = Sugestoes_Similaridade(usuarios, filmes, (Usuario *)Nodo_ObterDados(nodo_atual), tamanho_hash, &chaves_similaridade);
+            HeapsortRacionalD(chaves_similaridade, num_usuarios-1);
 
-            // Imprimir sugestão por similaridade (placeholder)
+            fprintf(arq_output, "\n\nPersonalizada\n");
+
+            Sugestoes_ImprimirSimilaridade(similaridade, chaves_similaridade,
+                num_usuarios - 1, usuario_atual, num_sugestoes, num_filmes, arq_output);
             
+            fprintf(arq_output, "\n\n");
+
             if (DEBUG){
                 printf("UserID = %d\nEndereco da hash table = %p\n", user_id, similaridade);
                 int i;
                 for (i = 0; i < tamanho_hash; i++){
                     ABBusca *arvore = HashTable_ABB_ObterABBusca(similaridade, i);
-                    printf("Arvore #%d\t", i);
-                    printf("Endereco da raiz: %p\n", arvore->raiz);
-                    ABBusca_OrdemCentral(arvore->raiz, ImprimirAltasParadaAlt);
+                    if (arvore->raiz != NULL){
+                        printf("Arvore #%d\t", i);
+                        printf("Endereco da raiz: %p\n", arvore->raiz);
+                        ABBusca_OrdemCentral(arvore->raiz, ImprimirAltasParadaAlt);
+                    }
                 }
             }
 

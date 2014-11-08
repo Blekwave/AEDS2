@@ -9,14 +9,6 @@ typedef struct {
 } Racional;
 
 /**
- * Obtém o MDC de dois inteiros.
- * @param  a Inteiro
- * @param  b Inteiro
- * @return   MDC de a e b
- */
-static int MDC(int a, int b);
-
-/**
  * Inicializa um número racional. Simplifica a fração automaticamente.
  * @param  num Numerador
  * @param  den Denominador
@@ -40,4 +32,5 @@ void Racional_Definir(Racional *racional, int num, int den);
  * @return   n | n == 0 se a == b, n < 0 se a < b, n > 0 se a > b.
  */
 int Racional_Comparar(Racional a, Racional b);
+
 #endif
