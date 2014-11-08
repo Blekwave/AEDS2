@@ -29,9 +29,14 @@ static int MDC(int a, int b){
  */
 Racional *Racional_Inicializar(int num, int den){
     Racional *novo = malloc(sizeof(Racional));
-    int mdc = MDC(num, den);
-    novo->num = num/mdc;
-    novo->den = den/mdc;
+    if (num == 0){
+        novo->num = 0;
+        novo->den = 1;
+    } else {
+        int mdc = MDC(num, den);
+        novo->num = num/mdc;
+        novo->den = den/mdc;
+    }
     return novo;
 }
 
@@ -42,9 +47,14 @@ Racional *Racional_Inicializar(int num, int den){
  * @param den      Denominador
  */
 void Racional_Definir(Racional *racional, int num, int den){
-    int mdc = MDC(num, den);
-    racional->num = num/mdc;
-    racional->den = den/mdc;
+    if (num == 0){
+        racional->num = 0;
+        racional->den = 1;
+    } else {
+        int mdc = MDC(num, den);
+        racional->num = num/mdc;
+        racional->den = den/mdc;
+    }
 }
 
 /**

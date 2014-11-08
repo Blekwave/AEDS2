@@ -160,7 +160,8 @@ Racional Sugestoes_Jaccard(Usuario *usuario_a, Usuario *usuario_b);
  *                      ser criado.
  * @return              Endereço da hash table
  */
-HashTable_ABB *Sugestoes_Similaridade(Lista *usuarios, Lista *filmes, Usuario *alvo, int tamanho_hash, Racional **chaves);
+HashTable_ABB *Sugestoes_Similaridade(Lista *usuarios, Lista *filmes, 
+    Usuario *alvo, int tamanho_hash, Racional **chaves);
 
 ///////////////
 // IMPRESSÃO //

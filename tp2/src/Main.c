@@ -14,7 +14,7 @@
 #define BUFFER_OUTPUT_TAM 256
 #define ENDERECO_TAM 64
 
-#define DEBUG 1 // Remover isso e o resto das gambiarras antes de enviar o trabalho
+#define DEBUG 0 // Remover isso e o resto das gambiarras antes de enviar o trabalho
 
 void ImprimirAltasParada(void *dados){
     Wrapper_Popularidade *wrapper = (Wrapper_Popularidade *)dados;
@@ -154,6 +154,16 @@ int main(int argc, char const *argv[])
 
             Racional *chaves_similaridade; // tamanho: usuarios->tam - 1
             HashTable_ABB *similaridade = Sugestoes_Similaridade(usuarios, filmes, (Usuario *)Nodo_ObterDados(nodo_atual), tamanho_hash, &chaves_similaridade);
+
+            if (DEBUG){
+                int i = 0;
+                printf("Chaves:\n");
+                while (i < num_usuarios - 1){
+                    printf("%d/%d\n", chaves_similaridade[i].num, chaves_similaridade[i].den);
+                    i++;
+                }
+            }
+
             HeapsortRacionalD(chaves_similaridade, num_usuarios-1);
 
             fprintf(arq_output, "\n\nPersonalizada\n");
