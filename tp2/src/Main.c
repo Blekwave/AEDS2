@@ -8,7 +8,6 @@
 #include "Filme.h"
 #include "HashTable_ABB.h"
 #include "Racional.h"
-#include "Sort.h"
 
 #define BUFFER_INPUT_TAM 256
 #define BUFFER_OUTPUT_TAM 256
@@ -115,7 +114,6 @@ int main(int argc, char const *argv[])
 
     int *chaves_popularidade;
     HashTable_ABB *popularidade = Sugestoes_Popularidade(usuarios, filmes, tamanho_hash, &chaves_popularidade);
-    HeapsortIntD(chaves_popularidade, num_filmes);
 
     if (popularidade == NULL){
         fprintf(stderr, "ERRO: Falha na geracao de sugestoes por popularidade.\n");
@@ -163,8 +161,6 @@ int main(int argc, char const *argv[])
                     i++;
                 }
             }
-
-            HeapsortRacionalD(chaves_similaridade, num_usuarios-1);
 
             fprintf(arq_output, "\n\nPersonalizada\n");
 
