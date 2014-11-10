@@ -370,8 +370,6 @@ HashTable_ABB *Sugestoes_Similaridade(Lista *usuarios, Lista *filmes, Usuario *a
     *chaves = (Racional *)calloc(sizeof(Racional), Lista_ObterTamanho(usuarios) - 1);
     int chaves_indice = 0;
     
-    /////////////////////////////////////////////////////
-    // Ok, o que diabos está acontecendo ali em baixo? //
     ///////////////////////////////////////////////////////////////////////////////
     // Essa função itera pela lista de usuários da base de dados.                //
     // Para cada usuário (com exceção do alvo), o programa adiciona à hash ta-   //
