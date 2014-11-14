@@ -1,0 +1,52 @@
+{% extends "bootstrap/base.html" %}
+
+{% block title %}Teste{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='bootstrap.min.css') }}"/>
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}"/>
+{% endblock %}
+
+{% block navbar %}
+<nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+  <div class="container">
+    <!-- Mobile nav (com botão de toggle) -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="#">TP2d</a>
+    </div>
+
+    <!-- Itens da navegação -->
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav">
+        <li><a href="/">Home</a></li>
+        <li><a href="/form">Sugest&otilde;es</a></li>
+      </ul>
+    </div><!-- /.navbar-collapse -->
+  </div>
+</nav>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+  
+  {% block container %}
+
+  <p>Funciona, I guess.</p>
+
+  {% endblock %}
+</div>
+<footer class="footer">
+  <div class="container">
+    {% block footer %}
+      <p>Feito por Victor Diniz.</p>
+      <p>Esse site utiliza com muito orgulho <a href="http://flask.pocoo.org/">Flask</a>, <a href="http://www.mongodb.org/">MongoDB</a> e <a href="http://getbootstrap.com/">Bootstrap</a> (com o tema <a href="http://bootswatch.com/sandstone/">Sandstone</a>, do Bootswatch)</p>
+    {% endblock %}
+  </div>
+</footer>
+{% endblock %}

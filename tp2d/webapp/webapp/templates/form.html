@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block title %}Sugestões{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script src="{{ url_for('static', filename='form.js') }}"></script>
+{% endblock %}
+
+{% block container %}
+<div class="row">
+    <!-- Coluna da esquerda: flavour text -->
+    <div class="col-md-4 col-lg-3">
+        <h1>Conte-nos sobre seu gosto</h1>
+        <p>Marque os filmes que você já assistiu (pelo menos um é necessário) da seleção de filmes mais populares e obtenha recomendações personalizadas para a sua próxima tarde de frio, cobertores e pipoca quentinha.</p>
+    </div>
+    <!-- Coluna da direita: filmes -->
+    <div class="col-md-8 col-lg-9">
+        <div class="row">
+        {% for filme in dados %}
+            <div class="col-md-3 col-sm-4 col-xs-6">
+                <!-- Pôster do filme com tooltip com nome e ano -->
+                <a href="javascript:void(0)" class="thumbnail filme" title="{{ filme[1]['Title'] }} ({{ filme[1]['Year'] }})" data-toggle="tooltip" data-placement="bottom">
+                    <img src="{{ filme[1]['Poster'] }}" class="poster" draggable="false"/>
+                    <span class="movie_id" hidden>{{ filme[0] }}</span>
+                </a>
+            </div>
+        {% endfor %}
+        </div>
+        <form action="/sugestoes" method="post" name="sugestoes">
+            {{ form.assistidos }}
+            <button id="form-submit" type="submit" class="btn btn-success" disabled>Enviar</button>
+        </form>
+    </div>
+</div> <!-- div.row -->
+{% endblock %}

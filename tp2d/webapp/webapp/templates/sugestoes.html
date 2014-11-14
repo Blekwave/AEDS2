@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}Sugestões{% endblock %}
+
+{% block container %}
+<h1>Suas recomendações</h1>
+<p>Nosso sistema processou os seus filmes assistidos e concluiu que você pode gostar dos filmes a seguir:</p>
+<div class="row">
+{% for filme in dados %}
+    <div class="col-md-4 col-sm-6 col-xs-12">
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <div class="media">
+                    <a class="media-left" href="#">
+                        <img src="{{ filme[1]['Poster'] }}" alt="Poster" class="poster" draggable="false">
+                    </a>
+                    <div class="media-body">
+                        <h4 class="media-heading">{{ filme[1]['Title'] }} ({{ filme[1]['Year'] }})</h4>
+                        <p>Duração: {{ filme[1]['Runtime'] }} | {{ filme[1]['Genre'] }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endfor %}
+</div>
+
+{% endblock %}
