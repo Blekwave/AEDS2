@@ -2,8 +2,6 @@
 #include <math.h>
 #include <stdlib.h>
 
-#define BYTE 8 // Tecnicamente eu deveria usar CHAR_BIT, mas pelo amor de deus.
-
 /**
  * Inicializa uma bitstring.
  * @param  tamanho Tamanho, em BITS, da nova string.
@@ -12,7 +10,7 @@
 BitString *BitString_Inicializar(int tamanho){
     BitString *nova = malloc(sizeof(BitString));
     nova->tamanho = tamanho;
-    nova->tam_bloco = sizeof(chunk) * BYTE;
+    nova->tam_bloco = sizeof(chunk) * BYTESIZE;
     int num_blocos = (int)ceil((float)tamanho/nova->tam_bloco);
     nova->vetor = calloc(num_blocos, sizeof(chunk));
     return nova;

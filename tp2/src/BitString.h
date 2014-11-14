@@ -9,6 +9,8 @@ typedef struct {
     int tamanho;
 } BitString;
 
+#define BYTESIZE 8 // Tecnicamente eu deveria usar CHAR_BIT, mas pelo amor de deus.
+
 /**
  * Inicializa uma bitstring.
  * @param  tamanho Tamanho, em BITS, da nova string.
