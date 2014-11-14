@@ -3,6 +3,7 @@
 #include <string.h>
 #include "Arquivo.h"
 #include "Sugestoes.h"
+#include "Sugestoes_Impressao.h"
 #include "Lista.h"
 #include "Usuario.h"
 #include "Filme.h"
@@ -106,7 +107,7 @@ int main(int argc, char const *argv[])
 
             // Obtém sugestões por similaridade
             Racional *chaves_similaridade; // tamanho: usuarios->tam - 1
-            HashTable_ABB *similaridade = Sugestoes_Similaridade(usuarios, filmes, (Usuario *)Nodo_ObterDados(nodo_atual), tamanho_hash, &chaves_similaridade);
+            HashTable_ABB *similaridade = Sugestoes_Similaridade(usuarios, filmes, usuario_atual, tamanho_hash, &chaves_similaridade);
 
             // Imprime sugestões por similaridade
             fprintf(arq_output, "\n\nPersonalizada\n");
