@@ -51,16 +51,20 @@ int main(int argc, char const *argv[])
     ///////////////////////////////
 
     // Lê arquivos de avaliações e metadados e preenche as listas
-    Lista *usuarios = Arquivo_LerListaDeUsuarios(endereco_ratings);
     Lista *filmes = Arquivo_LerListaDeFilmes(endereco_metadata);
-
-    if (usuarios == NULL || filmes == NULL)
-    {
-        fprintf(stderr, "ERRO: Falha na leitura da base de dados de usuarios ou filmes.\n");
+    if (filmes == NULL){
+        fprintf(stderr, "ERRO: Falha na leitura da base de dados de filmes.\n");
         exit(1);
     }
-
     int num_filmes = Lista_ObterTamanho(filmes);
+
+    Lista *usuarios = Arquivo_LerListaDeUsuarios(endereco_ratings, num_filmes);
+    if (usuarios == NULL)
+    {
+        fprintf(stderr, "ERRO: Falha na leitura da base de dados de usuarios.\n");
+        exit(1);
+    }
+    // Unused: int num_usuarios = Lista_ObterTamanho(usuarios);
 
     ///////////////
     // Sugestões //
@@ -71,8 +75,10 @@ int main(int argc, char const *argv[])
     HashTable_ABB *popularidade = Sugestoes_Popularidade(usuarios, filmes, 
         tamanho_hash, &chaves_popularidade);
     
+    BitString *assistidos_dummy = BitString_Inicializar(num_filmes);
+
     // Inicializa usuário dummy para imprimir os filmes mais populares.
-    Usuario *dummy = Usuario_Inicializar(-1, NULL);
+    Usuario *dummy = Usuario_Inicializar(-1, assistidos_dummy);
     
     // Imprime as sugestões as sugestões por popularidade na saída padrão, para
     // que esta possa ser redirecionada e utilizada pelo webapp.

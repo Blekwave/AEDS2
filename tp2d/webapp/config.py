@@ -15,6 +15,6 @@ class Config(object):
     WTF_CSRF_ENABLED = False
     NUM_ASSISTIDOS = 20
     NUM_SUGESTOES = 6
-    # MONGO_HOST = "localhost"
-    # MONGO_PORT = 27017
-    # MONGO_DBNAME = "tp2d"
+    MONGO_HOST = "localhost"
+    MONGO_PORT = 27017
+    MONGO_DBNAME = "tp2d"

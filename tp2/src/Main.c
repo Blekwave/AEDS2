@@ -64,17 +64,20 @@ int main(int argc, char const *argv[])
     ///////////////////////////////
 
     // Lê arquivos de avaliações e metadados e preenche as listas
-    Lista *usuarios = Arquivo_LerListaDeUsuarios(endereco_ratings);
     Lista *filmes = Arquivo_LerListaDeFilmes(endereco_metadata);
-
-    if (usuarios == NULL || filmes == NULL)
-    {
-        fprintf(stderr, "ERRO: Falha na leitura da base de dados de usuarios ou filmes.\n");
+    if (filmes == NULL){
+        fprintf(stderr, "ERRO: Falha na leitura da base de dados de filmes.\n");
         exit(1);
     }
+    int num_filmes = Lista_ObterTamanho(filmes);
 
-    int num_filmes = Lista_ObterTamanho(filmes),
-        num_usuarios = Lista_ObterTamanho(usuarios);
+    Lista *usuarios = Arquivo_LerListaDeUsuarios(endereco_ratings, num_filmes);
+    if (usuarios == NULL)
+    {
+        fprintf(stderr, "ERRO: Falha na leitura da base de dados de usuarios.\n");
+        exit(1);
+    }
+    int num_usuarios = Lista_ObterTamanho(usuarios);
 
     ///////////////
     // Sugestões //
@@ -86,19 +89,19 @@ int main(int argc, char const *argv[])
         tamanho_hash, &chaves_popularidade);
     
     // Itera pelos usuários especificados no arquivo de entrada
-    while (fgets(input_buffer, BUFFER_INPUT_TAM-1, arq_input) != NULL){
+    while (fgets(input_buffer, BUFFER_INPUT_TAM-1, arq_input)){
         int user_id = atoi(input_buffer);
 
         // Busca por nodo correspondente na lista de usuários
         Nodo *nodo_atual = Lista_ObterCabeca(usuarios);
-        while ((nodo_atual = Nodo_ObterProx(nodo_atual)) != NULL &&
-            Usuario_ObterID((Usuario *)(Nodo_ObterDados(nodo_atual))) != user_id);
+        while ((nodo_atual = Nodo_ObterProx(nodo_atual)) &&
+            Usuario_ObterID(Nodo_ObterDados(nodo_atual)) != user_id);
 
         if (nodo_atual == NULL){
             fprintf(stderr, "ERRO: Usuario de id %d nao existe na base de dados\n", user_id);
         }
         else { // Usuário encontrado, computa e imprime sugestões
-            Usuario *usuario_atual = (Usuario *)Nodo_ObterDados(nodo_atual);
+            Usuario *usuario_atual = Nodo_ObterDados(nodo_atual);
 
             // Imprime sugestões por popularidade
             fprintf(arq_output, "%d:\nMost popular\n", user_id);

@@ -50,30 +50,42 @@ int main(int argc, char const *argv[])
     // Leitura de bases de dados //
     ///////////////////////////////
 
-    // Lê arquivos de avaliações e metadados e preenche as listas
-    Lista *usuarios = Arquivo_LerListaDeUsuarios(endereco_ratings);
-    Lista *filmes = Arquivo_LerListaDeFilmes(endereco_metadata);
+    ///////////////////////////////
+    // Leitura de bases de dados //
+    ///////////////////////////////
 
-    if (usuarios == NULL || filmes == NULL)
+    // Lê arquivos de avaliações e metadados e preenche as listas
+    Lista *filmes = Arquivo_LerListaDeFilmes(endereco_metadata);
+    if (filmes == NULL){
+        fprintf(stderr, "ERRO: Falha na leitura da base de dados de filmes.\n");
+        exit(1);
+    }
+    int num_filmes = Lista_ObterTamanho(filmes);
+
+    Lista *usuarios = Arquivo_LerListaDeUsuarios(endereco_ratings, num_filmes);
+    if (usuarios == NULL)
     {
-        fprintf(stderr, "ERRO: Falha na leitura da base de dados de usuarios ou filmes.\n");
+        fprintf(stderr, "ERRO: Falha na leitura da base de dados de usuarios.\n");
         exit(1);
     }
 
     ///////////////////
     // Usuário dummy //
     ///////////////////
-    
-    // Inicializa usuário dummy para imprimir as sugestões
-    Usuario *dummy = Usuario_Inicializar(-1, NULL);
+
+    // Inicializa bitstring de assistidos do usuário dummy.
+    // Não é preciso destruí-la manualmente, já que o dummy é adicionado à lista
+    // global de usuários.
+    BitString *assistidos = BitString_Inicializar(num_filmes);
 
     // Adiciona filmes assistidos passados ao programa pela linha de comando
     int i;
     for (i = 3; i < argc; i++){
-        int *temp = malloc(sizeof(int));
-        *temp = atoi(argv[i]);
-        Lista_AdicionarAoFinal(dummy->assistidos, (void *)temp);
+         BitString_DefinirBit(assistidos, atoi(argv[i]), 1); 
     }
+
+    // Inicializa usuário dummy para imprimir as sugestões
+    Usuario *dummy = Usuario_Inicializar(-1, assistidos);
 
     // É importante adicionar o dummy à lista de usuários para garantir que o
     // vetor de chaves tenha o tamanho certo. Isso não é necessário no programa
@@ -81,8 +93,7 @@ int main(int argc, char const *argv[])
     // das sugestões por popularidade depende apenas do número de filmes.
     Lista_AdicionarAoFinal(usuarios, (void *)dummy);
 
-    int num_filmes = Lista_ObterTamanho(filmes),
-        num_usuarios = Lista_ObterTamanho(usuarios);
+    int num_usuarios = Lista_ObterTamanho(usuarios);
 
     ///////////////
     // Sugestões //

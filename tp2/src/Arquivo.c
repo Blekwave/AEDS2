@@ -7,7 +7,7 @@
 #include <string.h>
 
 #define BUFFER_USUARIO_TAM 1024
-#define BUFFER_FILME_TAM 128
+#define BUFFER_FILME_TAM 256
 #define BUFFER_TITULO_TAM 128
 
 /**
@@ -15,28 +15,28 @@
  * @param  end   Endereço do arquivo a ser lido.
  * @return       Endereço da lista encadeada inicializada (ou NULL)
  */
-Lista *Arquivo_LerListaDeUsuarios(char *end){
+Lista *Arquivo_LerListaDeUsuarios(char *end, int num_filmes){
     FILE *arq = fopen(end, "r");
     if (arq == NULL)
         return NULL;
 
-    // Buffers de leitura
-    char buffer[BUFFER_USUARIO_TAM], *pch;
-    Usuario *usuario;
-    int *filme_temp;
+    char buffer[BUFFER_USUARIO_TAM]; // Buffer de leitura
 
     Lista *lista = Lista_Inicializar();
 
     // fgets retorna NULL em EOF
-    while (fgets(buffer, BUFFER_USUARIO_TAM - 1, arq) != NULL){
-        pch = strtok(buffer, " ");
-        usuario = Usuario_Inicializar(atoi(pch), NULL);
-        while ((pch = strtok(NULL, " ")) != NULL){
-            filme_temp = (int *)malloc(sizeof(int));
-            *filme_temp = atoi(pch);
-            Lista_AdicionarAoFinal(usuario->assistidos, (void *)filme_temp);
+    while (fgets(buffer, BUFFER_USUARIO_TAM - 1, arq)){
+        char *pch = strtok(buffer, " ");
+        int user_id = atoi(pch);
+
+        BitString *assistidos = BitString_Inicializar(num_filmes);
+        // Preenche a bitstring de filmes assistidos
+        while ((pch = strtok(NULL, " "))){
+            BitString_DefinirBit(assistidos, atoi(pch), 1);
         }
-        Lista_AdicionarAoFinal(lista, (void *)usuario);
+
+        Usuario *usuario = Usuario_Inicializar(user_id, assistidos);
+        Lista_AdicionarAoFinal(lista, usuario);
     }
 
     fclose(arq);

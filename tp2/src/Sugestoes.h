@@ -144,9 +144,12 @@ HashTable_ABB *Sugestoes_Popularidade(Lista *usuarios, Lista *filmes, int tamanh
  * Calcula o coeficiente de Jaccard entre dois usuários.
  * @param  usuario_a Endereço de um usuário.
  * @param  usuario_b Endereço de outro usuário.
+ * @param  buffer    BitString inicializada de tamanho numfilmes usada como buf-
+ *                   fer.
  * @return           Coeficiente de Jaccard entre dois usuários.
  */
-Racional Sugestoes_Jaccard(Usuario *usuario_a, Usuario *usuario_b);
+Racional Sugestoes_Jaccard(Usuario *usuario_a, Usuario *usuario_b, 
+    BitString *buffer);
 
 /**
  * Inicializa, preenche e retorna uma hash table contendo as sugestões por simi-

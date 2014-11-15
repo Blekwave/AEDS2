@@ -1,22 +1,20 @@
 #ifndef _USUARIO_H_
 #define _USUARIO_H_
 
-#include "Lista.h"
+#include "BitString.h"
 
 typedef struct {
     int user_id;
-    Lista *assistidos;
+    BitString *assistidos;
 } Usuario;
 
 /**
- * Aloca a memória e inicializa os elementos de um novo usuário. Inicializa a
- * lista de filmes assistidos (vazia).
+ * Aloca a memória e inicializa os elementos de um novo usuário.
  * @param  user_id    ID do usuário.
- * @param  assistidos Endereço da lista de filmes assistidos (ou NULL, caso se
- *                    queira criar uma lista vazia.
+ * @param  assistidos Endereço da lista de filmes assistidos.
  * @return            Endereço do novo usuário.
  */
-Usuario *Usuario_Inicializar(int user_id, Lista *assistidos);
+Usuario *Usuario_Inicializar(int user_id, BitString *assistidos);
 
 /**
  * Libera a memória do usuário e da lista de filmes.
@@ -26,7 +24,7 @@ void Usuario_Destruir(Usuario *usuario);
 
 /**
  * Função auxiliar para destruir usuário. Construída para ser usada em conjunto
- * com as funções de destruir lista.
+ * com as funções de destruir lista. Libera apenas a memória da lista de filmes.
  * @param dados Endereço do usuário.
  */
 void Usuario_DestruirAux(void *dados);
@@ -43,6 +41,6 @@ int Usuario_ObterID(Usuario *usuario);
  * @param  usuario Usuário a ser lido.
  * @return         Endereço da lista de filmes assistidos.
  */
-Lista *Usuario_ObterAssistidos(Usuario *usuario);
+BitString *Usuario_ObterAssistidos(Usuario *usuario);
 
 #endif

@@ -1,11 +1,7 @@
 import requests
-from webapp import app
-from flask.ext.pymongo import PyMongo
+from webapp import app, mongo
 
 IMDBID_NUMDIGITOS = 7  # Usado para preencher zeros à esquerda
-
-mongo = PyMongo(app)  # Instancia DB
-
 
 def obter_dados(imdb_id):
     """Obtém os dados de um filme da API do IMDB ou do cache (MongoDB).
@@ -15,7 +11,7 @@ def obter_dados(imdb_id):
     imdb_id -- String correspondente ao imdbID já formatado.
                Formato: tt####### (# = [0-9])
     """
-    imdb_data = mongo.db.imdb_data  # collection
+    imdb_data = mongo.db.imdb_data
     query = imdb_data.find_one({"imdbID": imdb_id})
     if query is None:
         url = app.config['IMDB_API_URL'] + "i=" + imdb_id
