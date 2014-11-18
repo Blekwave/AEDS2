@@ -10,8 +10,6 @@ typedef struct {
 
 #define CHUNKSIZE 8 // Tamanho, em bits, do tipo chunk
 
-void ImprimirBitString(BitString *bs);
-
 ////////////////////////////////
 // Inicialização e destruição //
 ////////////////////////////////

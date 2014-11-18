@@ -226,10 +226,6 @@ HashTable_ABB *Sugestoes_Popularidade(Lista *usuarios, Lista *filmes,
     int *visualizacoes = Sugestoes_GerarVetorDeVisualizacoes(usuarios, 
         Lista_ObterTamanho(filmes));
 
-    // int i;
-    // for (i = 0; i < Lista_ObterTamanho(filmes); i++)
-    //     printf("ID: %d; Views = %d\n", i, visualizacoes[i]);
-
     // Inicializa hash table
     HashTable_ABB *tabela = HashTable_ABB_Inicializar(tamanho_hash,
         Sugestoes_PopularidadeComparacao, Sugestoes_PopularidadeIgualdade,
@@ -385,7 +381,11 @@ HashTable_ABB *Sugestoes_Similaridade(Lista *usuarios, Lista *filmes, Usuario *a
             (*chaves)[chaves_indice] = jaccard;
             chaves_indice++;
 
-            BitString *atual_assistidos = Usuario_ObterAssistidos(usuario_atual);
+            // // DEBUG
+            // printf("Jaccard(%d,%d) = %d/%d = %f\n", alvo->user_id, usuario_atual->user_id,
+            //     jaccard.num, jaccard.den, (double)jaccard.num/jaccard.den);
+
+            // BitString *atual_assistidos = Usuario_ObterAssistidos(usuario_atual);
             
             // Os filmes não assistidos pelo alvo e assistidos pelo usuário atu-
             // al podem ser obtidos por uma subtração de conjuntos.

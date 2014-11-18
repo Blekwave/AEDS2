@@ -3,13 +3,6 @@
 #include <stdlib.h>
 
 #include <stdio.h>
-void ImprimirBitString(BitString *bs){
-    int tam = BitString_ObterTamanho(bs);
-    int i;
-    for (i = 0; i < tam; i++)
-        printf("%d", BitString_ObterBit(bs, i));
-    printf("\n");
-}
 
 ////////////////////////////////
 // Inicialização e destruição //

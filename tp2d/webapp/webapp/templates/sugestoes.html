@@ -2,6 +2,11 @@
 
 {% block title %}Sugestões{% endblock %}
 
+{% block scripts %}
+{{ super() }}
+<script src="{{ url_for('static', filename='sugestoes.js') }}"></script>
+{% endblock %}
+
 {% block container %}
 <h1>Suas recomendações</h1>
 <p>Nosso sistema processou os seus filmes assistidos e concluiu que você pode gostar dos filmes a seguir:</p>
@@ -11,12 +16,14 @@
         <div class="panel panel-default">
             <div class="panel-body">
                 <div class="media">
-                    <a class="media-left" href="#">
+                    <a class="media-left" href="http://www.imdb.com/title/{{ filme[1]['imdbID'] }}">
                         <img src="{{ filme[1]['Poster'] }}" alt="Poster" class="poster" draggable="false">
                     </a>
                     <div class="media-body">
                         <h4 class="media-heading">{{ filme[1]['Title'] }} ({{ filme[1]['Year'] }})</h4>
-                        <p>Duração: {{ filme[1]['Runtime'] }} | {{ filme[1]['Genre'] }}</p>
+                        <p>{{ filme[1]['Runtime'] }} | {{ filme[1]['Genre'] }}</p>
+                        <p><strong>Diretor: </strong>{{ filme[1]['Director'] }}</p>
+                        <button type="button" class="btn btn-info" data-container="body" data-toggle="popover" title="Sinopse" data-content="{{ filme[1]['Plot'] }}" data-placement="bottom"><i class="fa fa-book fa-lg"></i></button>
                     </div>
                 </div>
             </div>

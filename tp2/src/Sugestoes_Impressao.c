@@ -130,6 +130,16 @@ static void ImprimirABBuscaSimilaridade(ABNodo *raiz, BitString *assistidos,
         *num_sugestoes > 0 && 
         (Racional_Comparar(wrapper->jaccard, nodo_wrapper->jaccard) == 0))
     {
+
+        // // DEBUG
+        // printf("Imprimindo Chave %d/%d (%f): %d - %s (%d) (user_id = %d)\n",
+        //     nodo_wrapper->jaccard.num,
+        //     nodo_wrapper->jaccard.den, 
+        //     (double)nodo_wrapper->jaccard.num/nodo_wrapper->jaccard.den,
+        //     nodo_wrapper->filme->movie_id,
+        //     nodo_wrapper->filme->titulo, nodo_wrapper->filme->ano,
+        //     nodo_wrapper->usuario->user_id);
+
         ImprimirFilme(nodo_wrapper->filme, arquivo);
         BitString_DefinirBit(assistidos, nodo_wrapper->filme->movie_id, 1);
         (*num_sugestoes)--;
@@ -153,6 +163,9 @@ static void ImprimirABBuscaSimilaridade(ABNodo *raiz, BitString *assistidos,
 void Sugestoes_ImprimirSimilaridade(HashTable_ABB *tabela, Racional *chaves,
     int num_chaves, Usuario *alvo, int num_sugestoes, int num_filmes, FILE *arquivo){
     BitString *assistidos = Usuario_ObterAssistidos(alvo);
+    BitString *assistidos_copia = 
+        BitString_Inicializar(BitString_ObterTamanho(assistidos));
+    BitString_Copiar(assistidos_copia, assistidos);
 
     int chaves_indice = 0;
     int tabela_tam = HashTable_ABB_ObterTamanho(tabela);
@@ -165,8 +178,8 @@ void Sugestoes_ImprimirSimilaridade(HashTable_ABB *tabela, Racional *chaves,
         int pos = Sugestoes_SimilaridadeHash(&wrapper, tabela_tam);
         // Determina a árvore correspondente à posição
         ABNodo *raiz = ABBusca_ObterRaiz(HashTable_ABB_ObterABBusca(tabela, pos));
-        // printf("Chave = %d/%d, Pos = %d, Raiz = %p\n", chaves[chaves_indice].num, chaves[chaves_indice].den, pos, raiz);
-        ImprimirABBuscaSimilaridade(raiz, assistidos, &num_sugestoes, &wrapper, arquivo);
+        ImprimirABBuscaSimilaridade(raiz, assistidos_copia, &num_sugestoes, &wrapper, arquivo);
         chaves_indice++;
     }
+    BitString_Destruir(assistidos_copia);
 }

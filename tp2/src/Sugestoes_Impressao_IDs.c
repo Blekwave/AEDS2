@@ -165,7 +165,6 @@ void Sugestoes_ImprimirSimilaridade(HashTable_ABB *tabela, Racional *chaves,
         int pos = Sugestoes_SimilaridadeHash(&wrapper, tabela_tam);
         // Determina a árvore correspondente à posição
         ABNodo *raiz = ABBusca_ObterRaiz(HashTable_ABB_ObterABBusca(tabela, pos));
-        // printf("Chave = %d/%d, Pos = %d, Raiz = %p\n", chaves[chaves_indice].num, chaves[chaves_indice].den, pos, raiz);
         ImprimirABBuscaSimilaridade(raiz, assistidos, &num_sugestoes, &wrapper, arquivo);
         chaves_indice++;
     }
