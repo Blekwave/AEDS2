@@ -6,8 +6,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define BUFFER_USUARIO_TAM 1024
-#define BUFFER_FILME_TAM 256
+#define BUFFER_USUARIO_TAM 2048
+#define BUFFER_FILME_TAM 512
 #define BUFFER_TITULO_TAM 128
 
 /**

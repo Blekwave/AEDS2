@@ -89,9 +89,9 @@ int Sugestoes_PopularidadeHash(void *dados, int tam){
 //////////////////
 
 /**
- * Compara dois usuários a e b, retorna verdadeiro se a é maior que b, de acordo
+ * Compara dois wrappers a e b, retorna verdadeiro se a é maior que b, de acordo
  * com os critérios definidos no trabalho:
- * User ID
+ * User ID > Ano de lançamento do filme > movie_id do filme
  * @param  a Wrapper_Similaridade a ser comparado.
  * @param  b Wrapper_Similaridade a ser comparado.
  * @return   a > b
@@ -107,15 +107,18 @@ bool Sugestoes_SimilaridadeComparacao(void *a, void *b){
 }
 
 /**
- * Compara dois usuarios a e b, retorna verdadeiro se a é igual a b. Isso é feito
- * comparando seus user_ids, já que eles são chaves únicas.
+ * Compara dois usuarios a e b, retorna verdadeiro se a é igual a b. Isso é fei-
+ * to comparando seus user_ids e movie_ids, já que eles são chaves únicas e cada
+ * wrapper relaciona um filme com um usuário.
  * @param  a Wrapper_Similaridade a ser comparado.
  * @param  b Wrapper_Similaridade a ser comparado.
  * @return   a == b
  */
 bool Sugestoes_SimilaridadeIgualdade(void *a, void *b){
-    return ((Wrapper_Similaridade *)a)->usuario->user_id == 
-        ((Wrapper_Similaridade *)b)->usuario->user_id;
+    Wrapper_Similaridade *x = a;
+    Wrapper_Similaridade *y = b;
+    return x->usuario->user_id == y->usuario->user_id &&
+        x->filme->movie_id == y->filme->movie_id;
 }
 
 /**
@@ -307,7 +310,12 @@ static void HeapsortRacionalD(Racional *v, int v_tam){
 }
 
 /**
- * Calcula o coeficiente de Jaccard entre dois usuários.
+ * Calcula o coeficiente de Jaccard entre dois usuários:
+ * 
+ *     (A interseção B)/(A união B)
+ *     
+ * A e B, no caso, são os conjuntos de filmes assistidos por dois usuários
+ * quaisquer.
  * @param  usuario_a Endereço de um usuário.
  * @param  usuario_b Endereço de outro usuário.
  * @param  buffer    BitString inicializada de tamanho numfilmes usada como buf-
@@ -320,16 +328,19 @@ Racional Sugestoes_Jaccard(Usuario *usuario_a, Usuario *usuario_b,
     BitString *b = Usuario_ObterAssistidos(usuario_b);
     int i, max = BitString_ObterTamanho(a);
 
+    // Realiza a interseção entre os conjuntos
     BitString_And(a, b, buffer);
     int intersecao = 0;
     for (i = 0; i < max; i++)
         intersecao += BitString_ObterBit(buffer, i);
 
+    // Realiza a união entre os conjuntos
     BitString_Or(a, b, buffer);
     int uniao = 0;
     for (i = 0; i < max; i++)
         uniao += BitString_ObterBit(buffer, i);
 
+    // Define o coeficiente como a razão entre a interseção e a união
     Racional jaccard;
     Racional_Definir(&jaccard, intersecao, uniao);
     return jaccard;
@@ -381,11 +392,7 @@ HashTable_ABB *Sugestoes_Similaridade(Lista *usuarios, Lista *filmes, Usuario *a
             (*chaves)[chaves_indice] = jaccard;
             chaves_indice++;
 
-            // // DEBUG
-            // printf("Jaccard(%d,%d) = %d/%d = %f\n", alvo->user_id, usuario_atual->user_id,
-            //     jaccard.num, jaccard.den, (double)jaccard.num/jaccard.den);
-
-            // BitString *atual_assistidos = Usuario_ObterAssistidos(usuario_atual);
+            BitString *atual_assistidos = Usuario_ObterAssistidos(usuario_atual);
             
             // Os filmes não assistidos pelo alvo e assistidos pelo usuário atu-
             // al podem ser obtidos por uma subtração de conjuntos.

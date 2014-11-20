@@ -269,7 +269,7 @@ void Lista_TrocarDados(Nodo *a, Nodo *b){
  *                    inteiros, por exemplo, retornar a > b significa que a lista
  *                    será ordenada em ordem decrescente.
  */
-void Lista_InsertionSort(Lista *lista, int(*Comparacao)(void *, void *)){
+void Lista_InsertionSort(Lista *lista, int(*Comparacao)(void *a, void *b)){
     if (lista->tamanho <= 1)
         return;
     Nodo *atual = lista->cabeca->prox->prox, *i, *prox;

@@ -2,8 +2,6 @@
 #include <math.h>
 #include <stdlib.h>
 
-#include <stdio.h>
-
 ////////////////////////////////
 // Inicialização e destruição //
 ////////////////////////////////

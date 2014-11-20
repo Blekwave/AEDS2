@@ -83,9 +83,9 @@ int Sugestoes_PopularidadeHash(void *dados, int tam);
 //////////////////
 
 /**
- * Compara dois usuários a e b, retorna verdadeiro se a é maior que b, de acordo
+ * Compara dois wrappers a e b, retorna verdadeiro se a é maior que b, de acordo
  * com os critérios definidos no trabalho:
- * Coeficiente de Jaccard (chave) > User ID
+ * User ID > Ano de lançamento do filme > movie_id do filme
  * @param  a Wrapper_Similaridade a ser comparado.
  * @param  b Wrapper_Similaridade a ser comparado.
  * @return   a > b
@@ -93,8 +93,9 @@ int Sugestoes_PopularidadeHash(void *dados, int tam);
 bool Sugestoes_SimilaridadeComparacao(void *a, void *b);
 
 /**
- * Compara dois usuarios a e b, retorna verdadeiro se a é igual a b. Isso é feito
- * comparando seus user_ids, já que eles são chaves únicas.
+ * Compara dois usuarios a e b, retorna verdadeiro se a é igual a b. Isso é fei-
+ * to comparando seus user_ids e movie_ids, já que eles são chaves únicas e cada
+ * wrapper relaciona um filme com um usuário.
  * @param  a Wrapper_Similaridade a ser comparado.
  * @param  b Wrapper_Similaridade a ser comparado.
  * @return   a == b

@@ -1,19 +1,19 @@
 #include "Racional.h"
 
 /**
- * Obtém o MDC de dois inteiros.
+ * Obtém o MDC de dois inteiros através do algoritmo de Euclides.
  * @param  a Inteiro
  * @param  b Inteiro
  * @return   MDC de a e b
  */
 static int MDC(int a, int b){
     int r;
-    if (b > a){
+    if (b > a){ // Troca os valores para que a >= b
         int temp = b;
         b = a;
         a = temp;
     }
-    do {
+    do { // Realiza o algoritmo de Euclides
         r = a % b;
         a = b;
         b = r;
@@ -29,10 +29,10 @@ static int MDC(int a, int b){
  */
 Racional *Racional_Inicializar(int num, int den){
     Racional *novo = malloc(sizeof(Racional));
-    if (num == 0){
+    if (num == 0){ // Evita divisão por zero
         novo->num = 0;
         novo->den = 1;
-    } else {
+    } else { // Simplifica a fração
         int mdc = MDC(num, den);
         novo->num = num/mdc;
         novo->den = den/mdc;
@@ -47,10 +47,10 @@ Racional *Racional_Inicializar(int num, int den){
  * @param den      Denominador
  */
 void Racional_Definir(Racional *racional, int num, int den){
-    if (num == 0){
+    if (num == 0){ // Evita divisão por zero
         racional->num = 0;
         racional->den = 1;
-    } else {
+    } else { // Simplifica a fração
         int mdc = MDC(num, den);
         racional->num = num/mdc;
         racional->den = den/mdc;
@@ -65,6 +65,9 @@ void Racional_Definir(Racional *racional, int num, int den){
  * @return   n | n == 0 se a == b, n < 0 se a < b, n > 0 se a > b.
  */
 int Racional_Comparar(Racional a, Racional b){
+    // A função retorna (a - b)*a.den*b.den
+    // Esse valor não corresponde à diferença entre a e b em si, mas seu sinal é
+    // o mesmo e essa expressão é mais rápida de se obter.
     b.num *= a.den;
     a.num *= b.den;
     return a.num - b.num;

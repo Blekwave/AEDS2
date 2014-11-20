@@ -10,17 +10,16 @@
 // IMPRESSÃO //
 ///////////////
 
-#define SEPARADOR '\t'
-#define int_nodo(x) (*(int *)x->dados)
-
+#define SEPARADOR "\t"
 
 /**
  * Imprime o título de um filme e uma tabulação em um arquivo.
  * @param filme   Filme.
  * @param arquivo Arquivo no qual será imprimido o título.
  */
-static void ImprimirFilme(Filme *filme, FILE *arquivo){
-    fprintf(arquivo, "%s%c", Filme_ObterTitulo(filme), SEPARADOR);
+static void ImprimirFilme(Filme *filme, FILE *arquivo, int *num_sugestoes){
+    fprintf(arquivo, "%s%s", Filme_ObterTitulo(filme), 
+        (*num_sugestoes) > 1 ? SEPARADOR : "");
 }
 
 //////////////////
@@ -35,6 +34,8 @@ static void ImprimirFilme(Filme *filme, FILE *arquivo){
  *                      foi assistido pelo alvo ou imprimido na operação. O ín-
  *                      dice da bitstring é o movie_id de cada filme.
  * @param num_sugestoes Número de sugestões a serem imprimidas.
+ * @param wrapper       Wrapper_Popularidade que contém a chave sendo imprimida
+ *                      nesse caminhamento.
  * @param arquivo       Arquivo no qual os filmes serão imprimidos.
  */
 static void ImprimirABBuscaPopularidade(ABNodo *raiz, BitString *assistidos, 
@@ -53,7 +54,7 @@ static void ImprimirABBuscaPopularidade(ABNodo *raiz, BitString *assistidos,
     if (BitString_ObterBit(assistidos, nodo_wrapper->filme->movie_id) == 0 &&
         *num_sugestoes > 0 &&
         (wrapper->visualizacoes == nodo_wrapper->visualizacoes)){
-        ImprimirFilme(nodo_wrapper->filme, arquivo);
+        ImprimirFilme(nodo_wrapper->filme, arquivo, num_sugestoes);
         BitString_DefinirBit(assistidos, nodo_wrapper->filme->movie_id, 1);
         (*num_sugestoes)--;
     }
@@ -110,6 +111,8 @@ void Sugestoes_ImprimirPopularidade(HashTable_ABB *tabela, int *chaves,
  *                      foi assistido pelo alvo ou imprimido na operação. O ín-
  *                      dice da bitstring é o movie_id de cada filme.
  * @param num_sugestoes Número de sugestões a serem imprimidas.
+ * @param wrapper       Wrapper_Similaridade que contém a chave sendo imprimida
+ *                      nesse caminhamento.
  * @param arquivo       Arquivo no qual os filmes serão imprimidos.
  */
 static void ImprimirABBuscaSimilaridade(ABNodo *raiz, BitString *assistidos, 
@@ -130,17 +133,7 @@ static void ImprimirABBuscaSimilaridade(ABNodo *raiz, BitString *assistidos,
         *num_sugestoes > 0 && 
         (Racional_Comparar(wrapper->jaccard, nodo_wrapper->jaccard) == 0))
     {
-
-        // // DEBUG
-        // printf("Imprimindo Chave %d/%d (%f): %d - %s (%d) (user_id = %d)\n",
-        //     nodo_wrapper->jaccard.num,
-        //     nodo_wrapper->jaccard.den, 
-        //     (double)nodo_wrapper->jaccard.num/nodo_wrapper->jaccard.den,
-        //     nodo_wrapper->filme->movie_id,
-        //     nodo_wrapper->filme->titulo, nodo_wrapper->filme->ano,
-        //     nodo_wrapper->usuario->user_id);
-
-        ImprimirFilme(nodo_wrapper->filme, arquivo);
+        ImprimirFilme(nodo_wrapper->filme, arquivo, num_sugestoes);
         BitString_DefinirBit(assistidos, nodo_wrapper->filme->movie_id, 1);
         (*num_sugestoes)--;
     }

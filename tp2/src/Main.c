@@ -56,7 +56,7 @@ int main(int argc, char const *argv[])
     fgetc(arq_input); // Processa a linha em branco (segunda linha do arq_input)
 
     // Imprime a primeira linha no arquivo de saída
-    fprintf(arq_output, "%s\t%s\t%d\t%d\n\n", endereco_metadata, 
+    fprintf(arq_output, "%s\t%s\t%d\t%d\n", endereco_metadata, 
         endereco_ratings, num_sugestoes, tamanho_hash);
 
     ///////////////////////////////
@@ -104,7 +104,7 @@ int main(int argc, char const *argv[])
             Usuario *usuario_atual = Nodo_ObterDados(nodo_atual);
 
             // Imprime sugestões por popularidade
-            fprintf(arq_output, "%d:\nMost popular\n", user_id);
+            fprintf(arq_output, "\n%d:\nMost popular\n", user_id);
             Sugestoes_ImprimirPopularidade(popularidade, chaves_popularidade,
                 num_filmes, usuario_atual, num_sugestoes, arq_output);
 
@@ -116,7 +116,7 @@ int main(int argc, char const *argv[])
             fprintf(arq_output, "\n\nPersonalizada\n");
             Sugestoes_ImprimirSimilaridade(similaridade, chaves_similaridade,
                 num_usuarios - 1, usuario_atual, num_sugestoes, num_filmes, arq_output);
-            fprintf(arq_output, "\n\n");
+            fprintf(arq_output, "\n");
 
             HashTable_ABB_Destruir(similaridade, NULL);
             free(chaves_similaridade);
