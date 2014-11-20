@@ -27,6 +27,8 @@ button#form-submit {
 
 img.poster {
     max-height: 150px;
+    max-width: 165px;
+    overflow: hidden;
     width:auto;
 }
 

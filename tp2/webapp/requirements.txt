@@ -1,0 +1,7 @@
+flask
+Werkzeug
+Jinja2
+flask-bootstrap
+Flask-PyMongo
+Flask-WTF
+requests
