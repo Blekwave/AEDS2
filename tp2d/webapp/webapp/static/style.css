@@ -35,3 +35,13 @@ img.poster {
         max-height: 250px;
     }
 }
+
+div.media-body {
+    position: relative;
+    padding-bottom: 50px;
+}
+
+div.button-drawer {
+    position: absolute;
+    bottom: 0;
+}

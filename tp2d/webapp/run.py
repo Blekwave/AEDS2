@@ -1,6 +1,5 @@
-from webapp import app, mongo
+import webapp
 from config import Config
 
-app.config.from_object(Config)
-mongo.init_app(app)
+app = webapp.create_app(Config)
 app.run()

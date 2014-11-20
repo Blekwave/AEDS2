@@ -1,7 +1,6 @@
 import subprocess
 import os
-from webapp import app
-
+from flask import current_app
 
 def mais_populares(num):
     """Retorna uma lista com os movie ids e imdb ids dos filmes mais
@@ -12,9 +11,9 @@ def mais_populares(num):
     num -- Número de filmes a serem retornados
     """
     end_processo = os.path.join(
-        app.config['BASEDIR'], app.config['G_POPULARES'])
-    processo = subprocess.Popen([end_processo, app.config['G_CONFIG'], str(
-        app.config['NUM_ASSISTIDOS'])], stdout=subprocess.PIPE)
+        current_app.config['BASEDIR'], current_app.config['G_POPULARES'])
+    processo = subprocess.Popen([end_processo, current_app.config['G_CONFIG'], str(
+        current_app.config['NUM_ASSISTIDOS'])], stdout=subprocess.PIPE)
     lista_filmes = []
     while True:
         linha = processo.stdout.readline()
@@ -36,10 +35,12 @@ def sugestoes(assistidos, num):
     num -- Número de filmes a serem retornados
     """
     end_processo = os.path.join(
-        app.config['BASEDIR'], app.config['G_INDIVIDUAL'])
-    str_assistidos = " ".join([str(x) for x in assistidos])
-    p_params = [end_processo, app.config['G_CONFIG'],
-                str(app.config['NUM_SUGESTOES']), str_assistidos]
+        current_app.config['BASEDIR'], current_app.config['G_INDIVIDUAL'])
+    # Os argumentos de subprocess são listas de strings, então é pre-
+    # ciso converter a lista de assistidos.
+    assistidos_str = [str(x) for x in assistidos]
+    p_params = [end_processo, current_app.config['G_CONFIG'],
+                str(current_app.config['NUM_SUGESTOES'])] + assistidos_str
     processo = subprocess.Popen(p_params, stdout=subprocess.PIPE)
     lista_filmes = []
     while True:

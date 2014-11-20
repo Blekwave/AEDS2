@@ -1,9 +1,16 @@
 from flask import Flask
 from flask_bootstrap import Bootstrap
-from flask.ext.pymongo import PyMongo
 
-mongo = PyMongo()
-app = Flask(__name__)
-Bootstrap(app)
+def create_app(Config):
+    app = Flask(__name__)
+    app.config.from_object(Config)
 
-import webapp.views
+    Bootstrap(app)
+
+    from webapp.db import mongo
+    mongo.init_app(app)
+
+    from webapp.views import views
+    app.register_blueprint(views)
+
+    return app

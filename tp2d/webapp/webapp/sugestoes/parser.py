@@ -1,5 +1,6 @@
 import requests
-from webapp import app, mongo
+from webapp.db import mongo
+from flask import current_app
 
 IMDBID_NUMDIGITOS = 7  # Usado para preencher zeros à esquerda
 
@@ -14,7 +15,7 @@ def obter_dados(imdb_id):
     imdb_data = mongo.db.imdb_data
     query = imdb_data.find_one({"imdbID": imdb_id})
     if query is None:
-        url = app.config['IMDB_API_URL'] + "i=" + imdb_id
+        url = current_app.config['IMDB_API_URL'] + "i=" + imdb_id
         query = requests.get(url).json()
         imdb_data.insert(query)
     return query

@@ -23,7 +23,11 @@
                         <h4 class="media-heading">{{ filme[1]['Title'] }} ({{ filme[1]['Year'] }})</h4>
                         <p>{{ filme[1]['Runtime'] }} | {{ filme[1]['Genre'] }}</p>
                         <p><strong>Diretor: </strong>{{ filme[1]['Director'] }}</p>
-                        <button type="button" class="btn btn-info" data-container="body" data-toggle="popover" title="Sinopse" data-content="{{ filme[1]['Plot'] }}" data-placement="bottom"><i class="fa fa-book fa-lg"></i></button>
+                        <div class="button-drawer">
+                            <button type="button" class="btn btn-primary" data-container="body" data-toggle="popover" title="Sinopse" data-content="{{ filme[1]['Plot'] }}" data-placement="bottom"><i class="fa fa-book fa-lg"></i></button>
+                            <a class="btn imdb_rating" href="http://www.imdb.com/title/{{ filme[1]['imdbID'] }}" title="IMDb" data-toggle="tooltip" data-placement="bottom" data-container="body">{{ filme[1]['imdbRating'] }}</a>
+                            <a class="btn metacritic_rating" href="http://www.metacritic.com/search/movie/{{ filme[1]['Title'] }}/results" title="Metascore" data-toggle="tooltip" data-placement="bottom" data-container="body">{{ filme[1]['Metascore'] }}</a>
+                        </div>
                     </div>
                 </div>
             </div>
