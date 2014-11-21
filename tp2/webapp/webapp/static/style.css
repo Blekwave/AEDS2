@@ -25,16 +25,32 @@ button#form-submit {
 
 /* /sugestoes/ */
 
-img.poster {
-    max-height: 150px;
-    max-width: 165px;
-    overflow: hidden;
-    width:auto;
+img.poster.formulario {
+    object-fit: contain;
+}
+
+img.poster.resultados {
+    object-fit: contain;
+}
+
+img.poster.resultados {
+    height: 150px;
+    width: 100px;
+}
+
+img.poster.formulario {
+    max-height: 50vw;
+    width: auto;
 }
 
 @media (min-width: 768px) {
-    img.poster {
+    img.poster.resultados {
+        height: 250px;
+        width: 170px;
+    }
+    img.poster.formulario {
         max-height: 250px;
+        width: auto;
     }
 }
 

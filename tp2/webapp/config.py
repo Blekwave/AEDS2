@@ -17,3 +17,4 @@ class Config(object):
     MONGO_HOST = "localhost"
     MONGO_PORT = 27017
     MONGO_DBNAME = "tp2d"
+    APPLICATION_ROOT = "/"
