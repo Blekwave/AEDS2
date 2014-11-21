@@ -8,6 +8,7 @@ class Config(object):
     BASEDIR = basedir
     IMDB_API_URL = "http://www.omdbapi.com/?"
     GERADORES_END = "geradores/"
+    POSTERS_END = "webapp\\static\\posters"
     G_POPULARES = os.path.join(GERADORES_END, "Populares.exe")
     G_INDIVIDUAL = os.path.join(GERADORES_END, "Individual.exe")
     G_CONFIG = os.path.join(GERADORES_END, "config.ini")
@@ -17,4 +18,5 @@ class Config(object):
     MONGO_HOST = "localhost"
     MONGO_PORT = 27017
     MONGO_DBNAME = "tp2d"
+    #SERVER_NAME = "127.0.0.1"
     APPLICATION_ROOT = "/"

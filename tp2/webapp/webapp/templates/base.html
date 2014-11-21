@@ -25,8 +25,8 @@
     <!-- Itens da navegação -->
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
       <ul class="nav navbar-nav">
-        <li><a href="/">Home</a></li>
-        <li><a href="/form">Sugest&otilde;es</a></li>
+        <li><a href="{{ url_for('views.index') }}">Home</a></li>
+        <li><a href="{{ url_for('views.form') }}">Sugest&otilde;es</a></li>
       </ul>
     </div><!-- /.navbar-collapse -->
   </div>
