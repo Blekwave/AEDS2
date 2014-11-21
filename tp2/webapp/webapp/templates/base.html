@@ -6,6 +6,7 @@
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='bootstrap.min.css') }}"/>
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}"/>
 <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+<link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon.png') }}">
 {% endblock %}
 
 {% block navbar %}
@@ -26,7 +27,8 @@
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
       <ul class="nav navbar-nav">
         <li><a href="{{ url_for('views.index') }}">Home</a></li>
-        <li><a href="{{ url_for('views.form') }}">Sugest&otilde;es</a></li>
+        <li><a href="{{ url_for('views.form') }}">Sugestões</a></li>
+        <li><a href="{{ url_for('views.sobre') }}">Sobre</a></li>
       </ul>
     </div><!-- /.navbar-collapse -->
   </div>

@@ -12,9 +12,11 @@ def mais_populares(num):
     """
     end_processo = os.path.join(
         current_app.config['BASEDIR'], current_app.config['G_POPULARES'])
+    # Invoca o subprocesso que calcula os filmes mais populares
     processo = subprocess.Popen([end_processo, current_app.config['G_CONFIG'], str(
         current_app.config['NUM_ASSISTIDOS'])], stdout=subprocess.PIPE)
     lista_filmes = []
+    # Lê os filmes a partir do pipe da saída padrão até eof
     while True:
         linha = processo.stdout.readline()
         if not linha:  # eof
@@ -41,8 +43,10 @@ def sugestoes(assistidos, num):
     assistidos_str = [str(x) for x in assistidos]
     p_params = [end_processo, current_app.config['G_CONFIG'],
                 str(current_app.config['NUM_SUGESTOES'])] + assistidos_str
+    # Invoca o subprocesso que calcula os filmes sugeridos so usuário
     processo = subprocess.Popen(p_params, stdout=subprocess.PIPE)
     lista_filmes = []
+    # Lê os filmes a partir do pipe da saída padrão até eof
     while True:
         linha = processo.stdout.readline()
         if not linha:  # eof

@@ -10,6 +10,10 @@ def index():
     """Página principal do site."""
     return render_template("home.html")
 
+@views.route('/sobre')
+def sobre():
+    """Sobre o trabalho."""
+    return render_template("sobre.html")
 
 @views.route('/form')
 def form():

@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}Sobre o trabalho{% endblock %}
+
+{% block container %}
+<h1>Sobre o trabalho</h1>
+
+<h2>A proposta</h2>
+<p>Esse site foi feito como desafio extra de um trabalho prático da disciplina de AEDS II, na <a href="http://ufmg.br">UFMG</a>. O trabalho original envolvia, em C, fazer um sistema de recomendações de filmes que operasse no terminal e lesse sua entrada de um arquivo de texto. Seu enunciado está disponível <a href="{{ url_for('static', filename='enunciado.pdf') }}">neste link</a>. A minha implementação não está disponível nesse site, já que esse trabalho ainda está aberto. A documentação do meu trabalho, no entanto, <a href="{{ url_for('static', filename='doc.pdf') }}">pode ser acessada</a>, e ela descreve detalhadamente a implementação dele e as escolhas tomadas.</p>
+<p>A proposta do desafio era fazer uma interface web para o sistema de sugestões, em que o usuário poderia preencher um formulário com seus filmes assistidos e obter sugestões, de acordo com as bases de dados e o sistema implementado previamente. Este site é a minha implementação desse desafio, feito em Python 3 com o framework web <a href="http://flask.pocoo.org/">Flask</a>. A escolha de Flask foi feita pela facilidade de implementar um sistema novo de forma elegante e livre de gambiarras, já que esse framework é muito flexível e dá bastante liberdade ao desenvolvedor nas suas escolhas. Além disso, Python 3 tem a vantagem de ter suporte direto a Unicode, o que retira do desenvolvedor a necessidade de lidar com esse tipo de problema ou realizar algum tipo de encoding nos templates HTML.</p>
+
+<h2>Integração</h2>
+<p>O primeiro desafio envolvido neste trabalho foi integrar Python e C, já que reimplementar todo o sistema de sugestões me pareceu uma forma muito ineficiente de realizar o que foi proposto. Por isso, foram feitos, com base nas bibliotecas utilizadas no trabalho principal, programas principais alternativos, que recebiam a entrada como parâmetro na linha de comando. Esses programas são invocados como subprocessos e realizam a geração das sugestões. Por isso, ao sistema em Python, só resta, tendo em mãos os identificadores de cada filme no IMDb, obter os dados sobre cada filme e gerenciar a interação com o usuário. Inicialmente, foi considerada a possibilidade de utilizar o sistema de extensão de Python com bibliotecas em C, mas a ideia foi rapidamente descartada por ser um sistema bem mais complexo do que o necessário.</p>
+
+<h2>Obtenção de dados dos filmes</h2>
+<p>Para obter as informações sobre cada filme a partir do imdbID de cada lançamento, foi utilizada a <a href="http://www.omdbapi.com/">OMDb API</a>. Essa API retorna um objeto JSON que contém todos os dados necessários para o site. O uso da API torna desnecessário tentar obter esses dados manualmente do site do IMDb, o que seria mais propenso a erros e difícil de implementar. A disposição dos dados é feita através do sistema de templates utilizado em Flask, Jinja2, utilizando a extensão <a href="http://pythonhosted.org/Flask-Bootstrap/">Flask-Bootstrap</a> para criar uma interface agradável e responsiva sem grande dificuldade.</p>
+<p>Efetuar tantos pedidos à API é muito lento, porém. Isso causava grande lentidão na geração das sugestões e tomava bem mais tempo do que gerar as sugestões em si. Para remediar esse problema, foi implementado um sistema de cache dos dados de cada filme em um banco de dados MongoDB. Com isso, só é preciso realizar o pedido à API uma vez. Como os filmes mais populares exibidos no formulário são sempre os mesmos, o desempenho da página do formulário teve grande melhora quando esse cache foi originalmente implementado.</p>
+
+<h2>Outras características</h2>
+<p>Prestar um serviço de qualidade é sempre uma boa meta. Para isso, o sistema não só diz ao usuário quais filmes ele recomenda, mas também revela várias informações relevantes de forma visualmente agradável. A página de sugestões mostra a duração do filme, o seu gênero, o diretor, as avaliações do filme no IMDb e no Metacritic (metascore) e também disponibiliza um botão para mostrar a sinopse do filme em um pop-up. Para facilitar a visualização, as notas de cada filme são coloridas diferentemente de acordo com o valor. Isso é feito através de algumas funções em Javascript, utilizando jQuery para programar de forma compacta e eficiente.</p>
+<p>Do lado de cada filme, é mostrado seu pôster. No entanto, isso se mostrou um desafio quando o programa foi exportado para este servidor, já que o IMDb tem um sistema de proteção contra hotlinking de suas imagens. Por isso, também foi necessário implementar um cache dos pôsteres de cada filme. Se o filme não teve sua imagem salva ainda no cache, o sistema envia um pedido e baixa esse pôster, de forma a não causar problemas ou gerar um erro de acesso proibido. Isso também traz o benefício de realizar menos acessos a servidores remotos.</p>
+
+<div class="row">
+    <div class="col-md-6">
+        <h2>Instalação</h2>
+        <p>É necessário ter, além dos arquivos desse website, o código fonte ou executáveis dos programas auxiliares para gerar as sugestões, CMake, um compilador C (preferivelmente GCC, o único testado), Python 3, Virtualenv e uma instalação de MongoDB na máquina.</p>
+        <ol>
+            <li>Compile os programas auxiliares usando o CMake.</li>
+            <li>Copie os programas <em>Populares</em> e <em>Individual</em> para a pasta <em>geradores</em>, dentro da pasta do website.</li>
+            <li>Crie um ambiente virtual com <em>virtualenv</em> onde achar conveniente (e ative esse ambiente).</li>
+            <li>
+                Baixe as dependências do website através do arquivo <em>requirements.txt</em> com Pip:
+                <code>pip install -r requirements.txt</code>
+            </li>
+            <li>Edite os arquivos de configuração de acordo com os dados do servidor.</li>
+            <li>Execute diretamente o arquivo principal <em>run.py</em> ou utilize um servidor WSGI auxiliar.</li>
+            <li>Opcional: configure um <em>reverse proxy server</em> (Nginx, Apache) para gerenciar o acesso ao website.</li>
+        </ol>
+    </div>
+    <div class="col-md-6">
+        <h2>Sobre o autor</h2>
+        <div class="media">
+            <div class="media-left">
+                <img src="{{ url_for('static', filename='eu.jpg') }}" height="150px" width="150px" alt="" class="img-circle">
+            </div>
+            <div class="media-body">
+                <h4 class="media-heading">Victor Pires Diniz</h3>
+                <p>Aluno no segundo período do curso de Ciência da Computação da UFMG. Gosta de fightans, platformers, programação e música de qualidade discutível. Ainda não faz ideia de qual é a dessa vida maluca, mas até o momento vem gostando muito dela.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+{% endblock %}
