@@ -9,7 +9,7 @@ def obter_poster(imdb_id, poster_url):
     poster_filename = 'posters/%s.jpg' % (imdb_id)
     local_url = url_for('static', filename=poster_filename)
     new_file_location = os.path.join(current_app.config['BASEDIR'],
-        current_app.config['POSTERS_END'] + '\\%s.jpg' % (imdb_id))
+        current_app.config['POSTERS_END'], '%s.jpg' % (imdb_id))
 
     if not os.path.exists(new_file_location):
         query = requests.get(poster_url)
